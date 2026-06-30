@@ -1,0 +1,2255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>Self Control</title>
+<meta name="theme-color" content="#6C63FF">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Self Control">
+<!-- icon + manifest + service worker are all inlined below via JS (single-file app) -->
+<style>
+:root{
+  --accent:#6C63FF;--accent2:#FF6584;--gold:#FFD93D;
+  --bg:#000;--bg2:#0a0a14;--text:#fff;--muted:#888;
+  --border:rgba(255,255,255,.07);--navbg:rgba(0,0,0,0.95);
+}
+body.light{
+  --bg:#f4f5fb;--bg2:#ffffff;--text:#15151f;--muted:#6b6b80;
+  --border:rgba(0,0,0,.08);--navbg:rgba(255,255,255,0.96);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:72px;transition:background .3s,color .3s}
+.bn{position:fixed;bottom:0;left:0;right:0;height:60px;background:var(--navbg);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;z-index:9999;overflow-x:auto}
+.nb{display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 8px;border:none;background:transparent;color:#888;font-size:.62rem;cursor:pointer;border-radius:8px}
+.nb.a{color:var(--accent)}
+.nb .ic{font-size:1.25rem}
+.pg{display:none;padding:14px}
+.pg.a{display:block;animation:fu .25s ease}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+h1{font-size:1.25rem;font-weight:700;margin-bottom:12px}
+h2{font-size:.95rem;font-weight:600;margin-bottom:10px;color:#999}
+.cd{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px}
+.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px}
+.sc{text-align:center;padding:12px 6px;background:var(--bg2);border:1px solid var(--border);border-radius:10px}
+.sc .v{font-size:1.4rem;font-weight:700}
+.sc .l{font-size:.6rem;color:var(--muted);margin-top:2px}
+.pu{color:var(--accent)}
+.pk{color:var(--accent2)}
+.gd{color:var(--gold)}
+.pb{height:7px;background:rgba(127,127,127,.18);border-radius:7px;overflow:hidden;margin-top:6px}
+.pf{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:7px;transition:width .4s}
+.uq{background:linear-gradient(135deg,rgba(255,101,132,.07),rgba(108,99,255,.07));border:1px solid rgba(255,101,132,.18);border-radius:12px;padding:18px;text-align:center;margin-bottom:14px}
+.b1{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:18px;padding:9px 18px;color:#fff;font-weight:600;cursor:pointer;font-size:.82rem}
+.b2{background:var(--accent);border:none;border-radius:18px;padding:5px 12px;color:#fff;font-size:.72rem;font-weight:600;cursor:pointer}
+.b3{background:transparent;border:2px dashed var(--border);border-radius:10px;padding:11px;width:100%;color:var(--muted);font-weight:600;cursor:pointer;font-size:.82rem;margin-top:6px}
+.hi{display:flex;align-items:center;gap:10px;padding:12px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;margin-bottom:6px}
+.hi.d{border-color:rgba(76,175,80,.3)}
+.hi .hc{width:30px;height:30px;border-radius:50%;border:2px solid rgba(127,127,127,.35);background:transparent;color:var(--muted);font-size:.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hi .hc.c{background:#4CAF50;border-color:#4CAF50;color:#fff}
+.hi .hn{font-weight:600;font-size:.85rem}
+.hi .hm{font-size:.7rem;color:var(--muted)}
+.es{text-align:center;padding:35px 16px;color:var(--muted)}
+.es .ei{font-size:1.8rem;margin-bottom:6px}
+.qg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px}
+.qb{text-align:center;padding:14px 8px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;cursor:pointer}
+.qb .qi{font-size:1.4rem;margin-bottom:3px}
+.qb .ql{font-size:.7rem;color:var(--muted)}
+.gi{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:6px}
+.gi .gn{font-weight:600;font-size:.88rem;margin-bottom:6px}
+.gbar{height:7px;background:rgba(127,127,127,.18);border-radius:7px;overflow:hidden;margin-bottom:5px}
+.gfill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:7px;transition:width .3s}
+.gf{display:flex;justify-content:space-between;align-items:center}
+.gt{font-size:.7rem;color:var(--muted)}
+.ga{display:flex;gap:5px}
+.ga button{padding:3px 8px;border-radius:7px;border:none;font-size:.7rem;font-weight:600;cursor:pointer}
+.ga .inc{background:var(--accent);color:#fff}
+.ga .del{background:rgba(255,68,68,.15);color:#ff6b6b}
+.rg{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.rc{text-align:center;padding:14px;background:var(--bg2);border:1px solid var(--border);border-radius:10px}
+.ri{font-size:1.3rem;margin-bottom:3px}
+.rv{font-size:1.3rem;font-weight:700;color:var(--accent)}
+.rl{font-size:.65rem;color:var(--muted);margin-top:1px}
+.ta{width:100%;min-height:110px;background:rgba(127,127,127,.06);border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--text);font-size:.88rem;resize:vertical;outline:none;margin-bottom:8px;font-family:inherit}
+.ta:focus{border-color:var(--accent)}
+.je{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:6px}
+.jd{font-size:.68rem;color:var(--muted);margin-bottom:3px}
+.jt{font-size:.82rem;line-height:1.5}
+.mo{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.82);z-index:10000;align-items:flex-end;justify-content:center}
+.mo.show{display:flex}
+.ms{background:var(--bg2);border-radius:14px 14px 0 0;padding:18px;padding-bottom:calc(18px + env(safe-area-inset-bottom));width:100%;max-width:480px;animation:su .25s;max-height:88vh;overflow-y:auto;box-shadow:0 -8px 30px rgba(0,0,0,.5)}
+@keyframes su{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.ms h3{font-size:1rem;margin-bottom:10px;color:var(--accent)}
+.ms input,.ms select,.ms textarea{width:100%;padding:9px;background:rgba(127,127,127,.06);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:.88rem;margin-bottom:6px;outline:none}
+.ms input:focus,.ms select:focus,.ms textarea:focus{border-color:var(--accent)}
+.ms select option{background:var(--bg2)}
+.mbtns{display:flex;gap:6px;margin-top:6px}
+.mbtns button{flex:1;padding:9px;border-radius:10px;border:none;font-weight:600;cursor:pointer;font-size:.82rem}
+.mbtns .mc{background:rgba(127,127,127,.12);color:var(--muted)}
+.mbtns .mf{background:var(--accent);color:#fff}
+.bm{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.88);z-index:10000;align-items:center;justify-content:center}
+.bm.show{display:flex}
+.bc{text-align:center}
+.bc .circ{width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));margin:0 auto 14px;animation:br 4s infinite}
+@keyframes br{0%,100%{transform:scale(.7);opacity:.5}50%{transform:scale(1.1);opacity:1}}
+.bc h3{font-size:1.15rem;color:var(--accent2);margin-bottom:3px}
+.bc p{color:var(--muted);font-size:.82rem;margin-bottom:14px}
+.bc .cb{background:transparent;border:1px solid var(--border);border-radius:14px;padding:7px 14px;color:var(--muted);cursor:pointer;margin-top:8px;font-size:.82rem}
+.ts{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg2);border:1px solid var(--accent);border-radius:12px;padding:9px 16px;color:var(--text);font-size:.82rem;z-index:9999;transition:transform .25s;white-space:nowrap}
+.ts.show{transform:translateX(-50%) translateY(0)}
+.ji2{background:rgba(127,127,127,.06);border:1px solid var(--border);border-radius:10px;padding:9px;color:var(--text);font-size:.92rem;outline:none;flex:1}
+.ji2:focus{border-color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:10px}
+.chip{background:rgba(127,127,127,.06);border:1px solid var(--border);border-radius:18px;padding:5px 10px;font-size:.75rem;color:var(--text);cursor:pointer;display:inline-flex;align-items:center;gap:3px}
+.chip.s{border-color:var(--accent2);background:rgba(255,101,132,.1);color:var(--accent2)}
+.chip .rx{font-size:.65rem;color:var(--muted);cursor:pointer;opacity:.5}
+.chip .rx:hover{opacity:1;color:#f44}
+.jtb{width:115px;height:115px;border-radius:50%;border:3px solid var(--accent2);background:rgba(255,101,132,.08);color:var(--accent2);font-size:1.9rem;cursor:pointer;margin:10px auto;display:flex;align-items:center;justify-content:center}
+.jtb:active{transform:scale(.92);border-color:var(--gold);color:var(--gold)}
+.jcc{font-size:2.8rem;font-weight:800;margin:10px 0;position:relative}
+.jcc .p1{position:absolute;font-size:1.1rem;font-weight:700;color:var(--gold);pointer-events:none;animation:fp .65s forwards}
+@keyframes fp{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-35px);opacity:0}}
+.mdots{display:flex;flex-wrap:wrap;justify-content:center;gap:3px;margin:10px 0}
+.mdot{width:7px;height:7px;border-radius:50%;background:rgba(127,127,127,.2)}
+.mdot.on{background:var(--accent2);box-shadow:0 0 5px rgba(255,101,132,.4)}
+.bg2{display:inline-block;padding:3px 10px;border-radius:14px;font-size:.75rem;font-weight:600;color:#FFD93D;background:rgba(255,217,61,.1);border:1px solid rgba(255,217,61,.25);margin-bottom:10px}
+.qt{text-align:center;padding:18px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;margin-bottom:14px}
+.qt p{font-style:italic;font-size:.92rem;line-height:1.5;margin-bottom:3px}
+.qt a{font-size:.75rem;color:var(--muted)}
+.jpanel{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;margin-bottom:14px}
+.jn{font-size:1.3rem;font-weight:700;background:linear-gradient(135deg,var(--accent2),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+@media(min-width:580px){body{max-width:560px;margin:0 auto}.bn{max-width:560px;left:50%;transform:translateX(-50%)}}
+/* ===== NEW FEATURE STYLES ===== */
+.nb{flex-shrink:0}
+.hi .actbtns{display:flex;gap:4px;flex-shrink:0}
+.iconbtn{width:26px;height:26px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.iconbtn:hover{border-color:var(--accent);color:var(--accent)}
+.iconbtn.dl:hover{border-color:#ff5252;color:#ff6b6b}
+/* weekly calendar */
+.wk{display:flex;justify-content:space-between;gap:4px;margin-top:6px}
+.wd{flex:1;text-align:center}
+.wd .wl{font-size:.55rem;color:var(--muted);margin-bottom:3px}
+.wd .wbox{height:30px;border-radius:7px;background:rgba(127,127,127,.12);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;border:1px solid transparent}
+.wd .wbox.done{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.wd .wbox.today{border-color:var(--gold)}
+.wd .wbox.partial{background:rgba(108,99,255,.3)}
+/* achievements */
+.achg{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:14px}
+.ach{display:flex;align-items:center;gap:8px;padding:10px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;opacity:.4}
+.ach.un{opacity:1;border-color:rgba(255,217,61,.4)}
+.ach .ai{font-size:1.5rem;flex-shrink:0;filter:grayscale(1)}
+.ach.un .ai{filter:none}
+.ach .at{font-size:.78rem;font-weight:600}
+.ach .ad{font-size:.62rem;color:var(--muted)}
+/* segmented / settings */
+.seg{display:flex;gap:5px;margin-bottom:10px}
+.seg button{flex:1;padding:8px;border-radius:9px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.8rem;font-weight:600;cursor:pointer}
+.seg button.a{background:var(--accent);color:#fff;border-color:var(--accent)}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.sw{width:34px;height:34px;border-radius:50%;cursor:pointer;border:3px solid transparent}
+.sw.a{border-color:var(--text)}
+.row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
+.row:last-child{border-bottom:none}
+.row .rt{font-size:.85rem;font-weight:600}
+.row .rd{font-size:.66rem;color:var(--muted)}
+/* toggle switch */
+.tg{width:44px;height:24px;border-radius:14px;background:rgba(127,127,127,.3);position:relative;cursor:pointer;flex-shrink:0;transition:background .2s}
+.tg.on{background:var(--accent)}
+.tg::after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:3px;left:3px;transition:left .2s}
+.tg.on::after{left:23px}
+.sbtn{width:100%;padding:11px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text);font-weight:600;cursor:pointer;font-size:.82rem;margin-top:8px}
+.sbtn.danger{color:#ff6b6b;border-color:rgba(255,82,82,.3)}
+.moodsel{display:flex;gap:6px;margin-bottom:8px;justify-content:space-between}
+.moodsel .mb{flex:1;text-align:center;font-size:1.4rem;padding:6px 0;border-radius:9px;background:rgba(127,127,127,.08);border:2px solid transparent;cursor:pointer}
+.moodsel .mb.a{border-color:var(--accent);background:rgba(108,99,255,.12)}
+.je .jmood{float:right;font-size:1.1rem}
+.searchbar{width:100%;padding:9px 12px;background:rgba(127,127,127,.06);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:.85rem;outline:none;margin-bottom:10px}
+.searchbar:focus{border-color:var(--accent)}
+/* confetti */
+#cfx{position:fixed;inset:0;pointer-events:none;z-index:9998}
+.cfp{position:absolute;width:9px;height:9px;border-radius:2px;animation:cff linear forwards}
+@keyframes cff{0%{transform:translateY(-10px) rotate(0);opacity:1}100%{transform:translateY(105vh) rotate(720deg);opacity:.2}}
+/* level up overlay */
+.lvup{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:10001;align-items:center;justify-content:center}
+.lvup.show{display:flex}
+.lvc{text-align:center;animation:su .3s}
+.lvc .lvbig{font-size:3.2rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.lvc .lvt{font-size:1.2rem;color:var(--gold);margin:4px 0 14px}
+.xpbar{height:9px;background:rgba(127,127,127,.18);border-radius:9px;overflow:hidden;margin-top:8px}
+.xpbar .xff{height:100%;background:linear-gradient(90deg,var(--accent),var(--gold));border-radius:9px;transition:width .5s}
+.note{font-size:.62rem;color:var(--muted);margin-top:2px;font-style:italic}
+.gdl{font-size:.6rem;color:var(--gold);margin-top:3px}
+.gdl.over{color:#ff6b6b}
+.statline{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);padding:4px 0}
+.statline b{color:var(--text)}
+/* ===== HOURLY CONTROL GRID ===== */
+.hourtop{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.hourtop .ht{font-weight:600}
+.hourbig{font-size:1.5rem;font-weight:800;color:var(--accent)}
+.ring{position:relative;width:90px;height:90px;margin:2px auto 8px}
+.ring svg{transform:rotate(-90deg)}
+.ring .rtxt{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .rtxt .rp{font-size:1.2rem;font-weight:800}
+.ring .rtxt .rs{font-size:.55rem;color:var(--muted)}
+.hgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-top:8px}
+.hcell{aspect-ratio:1;border-radius:8px;background:rgba(127,127,127,.1);border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:.5rem;color:var(--muted);position:relative;transition:transform .1s}
+.hcell:active{transform:scale(.9)}
+.hcell .hh{font-size:.62rem;font-weight:700;color:var(--text)}
+.hcell.on{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:transparent;color:#fff}
+.hcell.on .hh{color:#fff}
+.hcell.now{box-shadow:0 0 0 2px var(--gold)}
+.hcell .ck{font-size:.7rem}
+.hlegend{display:flex;gap:12px;justify-content:center;font-size:.6rem;color:var(--muted);margin-top:8px}
+.hlegend span{display:inline-flex;align-items:center;gap:4px}
+.dot8{width:8px;height:8px;border-radius:3px;display:inline-block}
+/* ===== CHALLENGES ===== */
+.chTabs{display:flex;gap:6px;margin-bottom:12px}
+.chTabs button{flex:1;padding:9px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--muted);font-weight:700;font-size:.85rem;cursor:pointer}
+.chTabs button.a{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent}
+.chc{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px}
+.chc .chh{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.chc .chn{font-weight:700;font-size:.95rem}
+.chc .chd{font-size:.7rem;color:var(--muted);margin-top:2px}
+.chbadge{flex-shrink:0;font-size:.65rem;font-weight:700;padding:3px 9px;border-radius:12px;background:rgba(108,99,255,.15);color:var(--accent);border:1px solid rgba(108,99,255,.3)}
+.chdays{display:flex;flex-wrap:wrap;gap:4px;margin:10px 0}
+.chday{width:26px;height:26px;border-radius:7px;background:rgba(127,127,127,.12);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:var(--muted);cursor:pointer}
+.chday.done{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent}
+.chday.today{box-shadow:0 0 0 2px var(--gold)}
+.chday.fail{background:rgba(255,82,82,.18);color:#ff6b6b;border-color:rgba(255,82,82,.3)}
+.chrow{display:flex;gap:6px;margin-top:8px}
+.chrow button{flex:1;padding:8px;border-radius:9px;border:none;font-weight:700;font-size:.78rem;cursor:pointer}
+.chprog{height:7px;background:rgba(127,127,127,.18);border-radius:7px;overflow:hidden;margin:6px 0}
+.chprog i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:7px}
+/* install banner */
+.ibanner{display:none;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(108,99,255,.15),rgba(255,101,132,.12));border:1px solid rgba(108,99,255,.3);border-radius:12px;padding:12px;margin-bottom:12px}
+.ibanner.show{display:flex}
+.ibanner img{width:38px;height:38px;border-radius:9px}
+.ibanner .it{flex:1;font-size:.8rem;font-weight:600}
+.ibanner .it small{display:block;font-weight:400;color:var(--muted);font-size:.66rem}
+/* 5 urge techniques */
+.tech{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:11px;margin-bottom:6px;text-align:left;display:flex;gap:10px;align-items:flex-start}
+.tech .ti{font-size:1.3rem;flex-shrink:0}
+.tech .tn{font-weight:700;font-size:.82rem}
+.tech .td{font-size:.68rem;color:var(--muted);line-height:1.45}
+.urgebtns{display:flex;gap:6px;margin-bottom:10px}
+.urgebtns button{flex:1;padding:8px;border-radius:9px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:.74rem;font-weight:600;cursor:pointer}
+.urgebtns button.a{background:var(--accent);color:#fff;border-color:transparent}
+/* 7-day bar chart */
+.bars{display:flex;align-items:flex-end;justify-content:space-between;gap:6px;height:90px}
+.bars .bcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px}
+.bars .bbar{width:100%;border-radius:6px 6px 0 0;background:linear-gradient(180deg,var(--accent),var(--accent2));min-height:3px;transition:height .4s;display:flex;align-items:flex-start;justify-content:center}
+.bars .bbar small{font-size:.5rem;color:#fff;margin-top:1px;font-weight:700}
+.bars .blbl{font-size:.55rem;color:var(--muted)}
+/* monthly heatmap */
+.heat{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.heat .hcap{font-size:.5rem;color:var(--muted);text-align:center;padding-bottom:2px}
+.heat .hd{aspect-ratio:1;border-radius:5px;background:rgba(127,127,127,.12);display:flex;align-items:center;justify-content:center;font-size:.5rem;color:var(--muted)}
+.heat .hd.l1{background:rgba(108,99,255,.25);color:#fff}
+.heat .hd.l2{background:rgba(108,99,255,.5);color:#fff}
+.heat .hd.l3{background:var(--accent);color:#fff}
+.heat .hd.l4{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.heat .hd.tdy{box-shadow:0 0 0 2px var(--gold)}
+.heat .hd.blank{background:transparent}
+/* ===== v6: per-habit tracker card ===== */
+.hi2{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:11px 12px;margin-bottom:8px}
+.hi2.d{border-color:rgba(76,175,80,.35)}
+.hi2top{display:flex;align-items:center;gap:10px}
+.hi2 .hn{font-weight:600;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hi2 .hm{font-size:.66rem;color:var(--muted);margin-top:1px}
+.hi2 .hc{width:30px;height:30px;border-radius:50%;border:2px solid rgba(127,127,127,.35);background:transparent;color:var(--muted);font-size:.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hi2 .hc.c{background:#4CAF50;border-color:#4CAF50;color:#fff}
+.hi2bot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:9px}
+.htrk{display:flex;gap:4px}
+.htd{width:24px;height:24px;border-radius:7px;background:rgba(127,127,127,.12);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;position:relative}
+.htd i{font-size:.5rem;color:var(--muted);font-style:normal}
+.htd.on{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:transparent}
+.htd.on i{color:#fff}
+.htd.tdy{box-shadow:0 0 0 2px var(--gold)}
+.hi2act{display:flex;gap:4px;flex-shrink:0}
+/* urge tracker card */
+.utracker{background:linear-gradient(135deg,rgba(255,101,132,.08),rgba(108,99,255,.08));border:1px solid rgba(255,101,132,.2);border-radius:12px;padding:14px;margin-bottom:12px}
+.utop{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.utop .un{font-weight:700;font-size:.92rem}
+.ustats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px}
+.ust{text-align:center;background:rgba(127,127,127,.08);border-radius:9px;padding:8px 4px}
+.ust .uv{font-size:1.25rem;font-weight:800}
+.ust .ul{font-size:.55rem;color:var(--muted);margin-top:1px}
+.urow{display:flex;gap:6px}
+.urow button{flex:1;padding:9px;border-radius:10px;border:none;font-weight:700;font-size:.76rem;cursor:pointer}
+.urow .ures{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.urow .ufail{background:rgba(255,82,82,.15);color:#ff6b6b;border:1px solid rgba(255,82,82,.3)}
+.ulogwrap{margin-top:10px}
+.uli{display:flex;align-items:center;gap:8px;font-size:.7rem;padding:5px 0;border-top:1px solid var(--border)}
+.uli .ud{flex:1;color:var(--muted)}
+.uli .ut{font-weight:700}
+.uli .ut.ok{color:#43C463}.uli .ut.no{color:#ff6b6b}
+/* habit detail modal heat */
+.dhead{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.dhead .di{font-size:1.8rem}
+.dhead .dn{font-weight:700;font-size:1.05rem}
+.dhead .dc{font-size:.7rem;color:var(--muted)}
+.dstats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+.dstat{text-align:center;background:rgba(127,127,127,.08);border-radius:9px;padding:9px 4px}
+.dstat .dv{font-size:1.3rem;font-weight:800;color:var(--accent)}
+.dstat .dl{font-size:.55rem;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<!-- NAV BAR -->
+<div class="bn">
+<button class="nb a" onclick="window.goPage(0)"><span class="ic">🏠</span>Home</button>
+<button class="nb" onclick="window.goPage(1)"><span class="ic">💪</span>Habits</button>
+<button class="nb" onclick="window.goPage(2)"><span class="ic">🔥</span>Challenge</button>
+<button class="nb" onclick="window.goPage(3)"><span class="ic">🙏</span>Jaap</button>
+<button class="nb" onclick="window.goPage(4)"><span class="ic">🎯</span>Goals</button>
+<button class="nb" onclick="window.goPage(5)"><span class="ic">📝</span>Journal</button>
+<button class="nb" onclick="window.goPage(6)"><span class="ic">📈</span>Review</button>
+<button class="nb" onclick="window.goPage(7)"><span class="ic">⚙️</span>More</button>
+</div>
+
+<!-- PAGE 0: HOME -->
+<div class="pg a" id="p0">
+<h1>Self Control — Aaj ka Control</h1>
+
+<!-- INSTALL BANNER -->
+<div class="ibanner" id="installBanner">
+<img id="appIcon" alt="">
+<div class="it">📲 App install karo<small>Offline chalega · home screen pe aayega</small></div>
+<button class="b1" id="installBtn">Install</button>
+</div>
+
+<div class="qt"><p>"The pain you feel today will be the strength you feel tomorrow."</p><a>— Anonymous</a></div>
+
+<!-- HOUR-BY-HOUR CONTROL -->
+<div class="cd">
+<div class="hourtop">
+<div class="ht">⏱️ Aaj ka Control — ghante</div>
+<div style="font-size:.7rem;color:var(--muted)" id="hourSummary">0 / 24</div>
+</div>
+<div class="ring">
+<svg width="90" height="90" viewBox="0 0 90 90">
+<circle cx="45" cy="45" r="38" fill="none" stroke="rgba(127,127,127,.18)" stroke-width="8"/>
+<circle id="hourRing" cx="45" cy="45" r="38" fill="none" stroke="url(#hgrad)" stroke-width="8" stroke-linecap="round" stroke-dasharray="238.76" stroke-dashoffset="238.76"/>
+<defs><linearGradient id="hgrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--accent)"/><stop offset="1" stop-color="var(--accent2)"/></linearGradient></defs>
+</svg>
+<div class="rtxt"><div class="rp" id="hourPct">0%</div><div class="rs">controlled</div></div>
+</div>
+<div style="text-align:center;font-size:.7rem;color:var(--muted);margin-bottom:4px">Har ghanta tap karke ✅ mark karo jab aapne control kiya</div>
+<div class="hgrid" id="hourGrid"></div>
+<div class="hlegend">
+<span><i class="dot8" style="background:linear-gradient(135deg,var(--accent),var(--accent2))"></i> Controlled</span>
+<span><i class="dot8" style="background:rgba(127,127,127,.2)"></i> Pending</span>
+<span><i class="dot8" style="background:transparent;box-shadow:0 0 0 2px var(--gold)"></i> Abhi</span>
+</div>
+</div>
+
+<div class="sg">
+<div class="sc"><div class="v pu" id="v0">0%</div><div class="l">Habit score</div></div>
+<div class="sc"><div class="v pk" id="v1">0/0</div><div class="l">Habits</div></div>
+<div class="sc"><div class="v gd" id="vHours">0/24</div><div class="l">Control hrs</div></div>
+<div class="sc"><div class="v pu" id="v3">0</div><div class="l">Urges</div></div>
+<div class="sc"><div class="v pk" id="v4">0</div><div class="l">Streak</div></div>
+<div class="sc"><div class="v gd" id="v5">0</div><div class="l">XP</div></div>
+</div>
+<div class="cd">
+<div style="display:flex;justify-content:space-between"><span style="font-weight:600">📈 Habit Progress</span><span id="v6" style="color:var(--muted);font-size:.8rem">0/0</span></div>
+<div class="pb"><div class="pf" id="v7" style="width:0%"></div></div>
+</div>
+<div class="cd">
+<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:600">🗓️ This Week</span><span id="weekPct" style="color:var(--muted);font-size:.8rem"></span></div>
+<div class="wk" id="weekCal"></div>
+</div>
+<!-- URGE CONTROL TRACKER -->
+<h2>🛡️ Urge Control Tracker</h2>
+<div class="utracker">
+<div class="utop"><span class="un">⚡ Urge feel ho rahi hai?</span><span style="font-size:.66rem;color:var(--muted)">5 tareeke + breathing</span></div>
+<div class="ustats">
+<div class="ust"><div class="uv pk" id="uClean">0</div><div class="ul">Clean Streak 🔥</div></div>
+<div class="ust"><div class="uv pu" id="uToday">0</div><div class="ul">Aaj Resisted</div></div>
+<div class="ust"><div class="uv gd" id="uTotal">0</div><div class="ul">Total Resisted</div></div>
+</div>
+<div class="urow">
+<button class="ures" onclick="window.openBreath()">🧘 Breathe &amp; Control</button>
+<button class="ufail" onclick="window.urgeGaveIn()">😔 Gave in</button>
+</div>
+<div class="ulogwrap" id="uLog"></div>
+</div>
+<h2>Quick access</h2>
+<div class="qg">
+<div class="qb" onclick="window.goPage(1)"><div class="qi">💪</div><div class="ql">Habits</div></div>
+<div class="qb" onclick="window.goPage(2)"><div class="qi">🔥</div><div class="ql">Challenge</div></div>
+<div class="qb" onclick="window.goPage(6)"><div class="qi">📈</div><div class="ql">Review</div></div>
+</div>
+<h2>📋 Today's Habits</h2>
+<div id="hHome"></div>
+</div>
+
+<!-- PAGE 1: HABITS -->
+<div class="pg" id="p1">
+<h1>💪 Habit Controller</h1>
+<div class="bg2">⭐ Level <span id="x0">1</span> — <span id="x1">Seeker</span> · <span id="x2">0</span> XP</div>
+<button class="b1" style="width:100%;padding:11px;margin-bottom:10px" onclick="window.openMH()">➕ Add New Habit</button>
+<div style="font-size:.72rem;color:var(--muted);margin-bottom:8px">💡 Tip: ✅ box click karke aaj ka habit done karo. Streak 🔥 har din badhegi.</div>
+<div class="seg" id="catFilter"></div>
+<div id="hFull"></div>
+</div>
+
+<!-- PAGE 2: CHALLENGE -->
+<div class="pg" id="p2">
+<h1>🔥 Challenges — 7 · 14 · 21 Days</h1>
+<div style="font-size:.74rem;color:var(--muted);margin-bottom:10px">Ek streak chuna, har din ✅ karo. Ek bhi din miss = challenge restart!</div>
+
+<h2>🚀 Active Challenges</h2>
+<div id="activeCh"></div>
+
+<h2>⭐ Ready-made Challenges</h2>
+<div class="chTabs" id="presetTabs">
+<button class="a" onclick="window.setChDays(7)" id="cd7">7 Days</button>
+<button onclick="window.setChDays(14)" id="cd14">14 Days</button>
+<button onclick="window.setChDays(21)" id="cd21">21 Days</button>
+</div>
+<div id="presetCh"></div>
+
+<button class="b3" onclick="window.openMC()">➕ Apna Custom Challenge banao</button>
+</div>
+
+<!-- PAGE 3: JAAP -->
+<div class="pg" id="p3">
+<h1>🙏 Jaap Counter</h1>
+<div class="jpanel">
+<p style="color:#888;font-size:.8rem;margin-bottom:6px">✏️ Custom Name Daalo</p>
+<div style="display:flex;gap:6px">
+<input type="text" class="ji2" id="jIn" placeholder="e.g. Radhe Radhe...">
+<button class="b1" onclick="window.addJName()">Add</button>
+</div>
+<div class="chips" id="jChips"></div>
+</div>
+<div class="cd" id="jPanel" style="display:none;text-align:center">
+<div class="jn" id="jName">—</div>
+<div class="jcc" id="jCnt">0</div>
+<button class="jtb" onclick="window.tapJaap()">🙏</button>
+<div class="mdots" id="jDots"></div>
+<div style="color:#888;font-size:.72rem"><span id="jMala">0/108</span> · Malas: <span id="jMC">0</span></div>
+</div>
+</div>
+
+<!-- PAGE 3: GOALS -->
+<div class="pg" id="p4">
+<h1>🎯 Goals &amp; Targets</h1>
+<div id="gFull"></div>
+<button class="b3" onclick="window.openMG()">➕ Add Goal</button>
+</div>
+
+<!-- PAGE 4: JOURNAL -->
+<div class="pg" id="p5">
+<h1>📝 Daily Journal</h1>
+<div class="cd">
+<div style="font-size:.78rem;color:var(--muted);margin-bottom:6px">Aaj ka mood?</div>
+<div class="moodsel" id="moodSel">
+<div class="mb" data-m="😄" onclick="window.selMood('😄')">😄</div>
+<div class="mb" data-m="🙂" onclick="window.selMood('🙂')">🙂</div>
+<div class="mb" data-m="😐" onclick="window.selMood('😐')">😐</div>
+<div class="mb" data-m="😔" onclick="window.selMood('😔')">😔</div>
+<div class="mb" data-m="😣" onclick="window.selMood('😣')">😣</div>
+</div>
+<textarea class="ta" id="jTxt" placeholder="Aaj kaisa raha?..."></textarea>
+<button class="b1" onclick="window.saveJournal()">💾 Save</button>
+</div>
+<input type="text" class="searchbar" id="jSearch" placeholder="🔍 Search entries..." oninput="window.renderJournal()">
+<div id="jEnts"></div>
+</div>
+
+<!-- PAGE 5: REVIEW -->
+<div class="pg" id="p6">
+<h1>📈 Review</h1>
+
+<!-- 7-day bar chart -->
+<div class="cd">
+<div style="font-weight:600;margin-bottom:8px">📊 Last 7 Days — Habit %</div>
+<div class="bars" id="barChart"></div>
+</div>
+
+<!-- monthly heatmap -->
+<div class="cd">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-weight:600">🗓️ <span id="hmMonth">Month</span></span><span style="font-size:.65rem;color:var(--muted)">Habit completion</span></div>
+<div class="heat" id="heatMap"></div>
+<div class="hlegend" style="margin-top:8px"><span>Kam</span><i class="dot8" style="background:rgba(127,127,127,.15)"></i><i class="dot8" style="background:rgba(108,99,255,.4)"></i><i class="dot8" style="background:var(--accent)"></i><i class="dot8" style="background:linear-gradient(135deg,var(--accent),var(--accent2))"></i><span>Zyada</span></div>
+</div>
+
+<div class="rg">
+<div class="rc"><div class="ri">🏆</div><div class="rv" id="r0">0</div><div class="rl">Best Streak</div></div>
+<div class="rc"><div class="ri">🛡️</div><div class="rv" id="r1">0</div><div class="rl">Urges Resisted</div></div>
+<div class="rc"><div class="ri">⭐</div><div class="rv" id="r2">1</div><div class="rl">Level</div></div>
+<div class="rc"><div class="ri">🎯</div><div class="rv" id="r3">0</div><div class="rl">Goals Done</div></div>
+<div class="rc"><div class="ri">📿</div><div class="rv" id="r4">0</div><div class="rl">Total Jaap</div></div>
+<div class="rc"><div class="ri">📊</div><div class="rv" id="r5">0</div><div class="rl">Total XP</div></div>
+</div>
+<div class="cd" style="margin-top:14px">
+<div style="font-weight:600;margin-bottom:6px">📊 Lifetime Stats</div>
+<div class="statline">Total habits completed <b id="ls0">0</b></div>
+<div class="statline">Total goals created <b id="ls1">0</b></div>
+<div class="statline">Journal entries <b id="ls2">0</b></div>
+<div class="statline">Total malas <b id="ls3">0</b></div>
+<div class="statline">Daily login streak <b id="ls4">0</b></div>
+<div class="statline">Best control hours (1 day) <b id="ls5">0</b>/24</div>
+<div class="statline">Active challenges <b id="ls6">0</b></div>
+</div>
+</div>
+
+<!-- PAGE 6: SETTINGS / MORE -->
+<div class="pg" id="p7">
+<h1>⚙️ More</h1>
+
+<h2>🏅 Achievements</h2>
+<div class="achg" id="achGrid"></div>
+
+<h2>🎨 Appearance</h2>
+<div class="cd">
+<div class="rt" style="margin-bottom:6px">Theme</div>
+<div class="seg" id="themeSeg">
+<button onclick="window.setTheme('dark')" id="thDark">🌙 Dark</button>
+<button onclick="window.setTheme('light')" id="thLight">☀️ Light</button>
+</div>
+<div class="rt" style="margin:6px 0">Accent Color</div>
+<div class="swatches" id="swatches"></div>
+</div>
+
+<h2>🔔 Preferences</h2>
+<div class="cd">
+<div class="row"><div><div class="rt">Sound effects</div><div class="rd">Tap & complete sounds</div></div><div class="tg" id="tgSound" onclick="window.togglePref('sound')"></div></div>
+<div class="row"><div><div class="rt">Vibration</div><div class="rd">Haptic feedback on tap</div></div><div class="tg" id="tgHaptic" onclick="window.togglePref('haptic')"></div></div>
+<div class="row"><div><div class="rt">Daily reminder 🔔</div><div class="rd">Roz 9 PM pe habit check notification</div></div><div class="tg" id="tgRemind" onclick="window.enableReminders()"></div></div>
+</div>
+
+<h2>💾 Data</h2>
+<div class="cd">
+<button class="sbtn" onclick="window.exportData()">⬇️ Export Backup (JSON)</button>
+<button class="sbtn" onclick="document.getElementById('importFile').click()">⬆️ Import Backup</button>
+<input type="file" id="importFile" accept="application/json,.json" style="display:none" onchange="window.importData(event)">
+<button class="sbtn danger" onclick="window.resetData()">🗑️ Reset All Data</button>
+</div>
+<div style="text-align:center;color:var(--muted);font-size:.7rem;margin-top:14px">Self Control v7 · Made with 🧘 discipline</div>
+</div>
+
+<!-- MODAL: EDIT HABIT (reuses add habit, handled in JS) -->
+
+<!-- CONFETTI -->
+<div id="cfx"></div>
+
+<!-- LEVEL UP OVERLAY -->
+<div class="lvup" id="lvUp" onclick="window.closeLvUp()">
+<div class="lvc">
+<div style="font-size:2rem">🎉 LEVEL UP! 🎉</div>
+<div class="lvbig" id="lvNum">2</div>
+<div class="lvt" id="lvTtl">Disciple</div>
+<button class="b1" onclick="window.closeLvUp()">Keep Going 🔥</button>
+</div>
+</div>
+
+<!-- MODAL: ADD HABIT -->
+<div class="mo" id="mH" onclick="if(event.target===this)window.closeMH()">
+<div class="ms">
+<h3 id="mhTitle">➕ New Habit</h3>
+<input type="text" id="hNm" placeholder="Habit name (e.g. No phone in bed)">
+<select id="hCat">
+<option value="🧘 Self Control">🧘 Self Control</option>
+<option value="💪 Fitness">💪 Fitness</option>
+<option value="⚡ Focus">⚡ Focus</option>
+<option value="🥗 Health">🥗 Health</option>
+<option value="📚 Growth">📚 Growth</option>
+<option value="🙏 Spiritual">🙏 Spiritual</option>
+</select>
+<input type="text" id="hNote" placeholder="Note / reminder (optional)">
+<div style="font-size:.7rem;color:var(--muted);margin:2px 0 5px">⚡ Quick add — tap karo:</div>
+<div class="chips" id="suggChips" style="justify-content:flex-start;margin-top:0;margin-bottom:6px"></div>
+<div class="mbtns">
+<button class="mc" onclick="window.closeMH()">Cancel</button>
+<button class="mf" onclick="window.addHabit()" id="mhSave">✅ Add Habit</button>
+</div>
+</div>
+</div>
+
+<!-- MODAL: ADD GOAL -->
+<div class="mo" id="mG" onclick="if(event.target===this)window.closeMG()">
+<div class="ms">
+<h3 id="mgTitle">🎯 New Goal</h3>
+<input type="text" id="gNm" placeholder="Goal name">
+<input type="number" id="gTgt" value="100" placeholder="Target">
+<label style="font-size:.7rem;color:var(--muted)">Deadline (optional)</label>
+<input type="date" id="gDl">
+<div class="mbtns">
+<button class="mc" onclick="window.closeMG()">Cancel</button>
+<button class="mf" onclick="window.addGoal()" id="mgSave">Add</button>
+</div>
+</div>
+</div>
+
+<!-- BREATHE MODAL -->
+<div class="bm" id="bMod">
+<div class="bc" style="max-width:440px;width:100%;padding:0 16px;max-height:92vh;overflow-y:auto">
+<div class="urgebtns" style="margin-top:14px">
+<button class="a" id="ubBreath" onclick="window.urgeView('breath')">🧘 Breathe</button>
+<button id="ubTech" onclick="window.urgeView('tech')">🛠️ 5 Tareeke</button>
+</div>
+
+<div id="urgeBreath">
+<h3>🧘 Breathe &amp; Control</h3>
+<p id="breathPhase" style="color:var(--accent2);font-weight:700;font-size:1rem;margin-bottom:6px">Breathe in...</p>
+<div class="circ"></div>
+<p style="color:var(--accent2);font-size:1rem;margin:10px 0">🕉️ This will pass 🕉️</p>
+</div>
+
+<div id="urgeTech" style="display:none;text-align:left">
+<h3 style="text-align:center">🛠️ Urge ko control karne ke 5 tareeke</h3>
+<div class="tech"><div class="ti">🫁</div><div><div class="tn">1. 4-7-8 Breathing</div><div class="td">4 sec saans andar lo, 7 sec roko, 8 sec dheere chhodo. 4 baar repeat. Urge ki energy turant girti hai.</div></div></div>
+<div class="tech"><div class="ti">🏃</div><div><div class="tn">2. 5-Minute Rule (Move!)</div><div class="td">Khade ho jao — 20 pushups, ya thande paani se muh dho, ya bahar walk pe niklo. Body busy = mann shaant.</div></div></div>
+<div class="tech"><div class="ti">🧊</div><div><div class="tn">3. Urge Surfing</div><div class="td">Urge ek lehar (wave) hai. Use rok-tok mat karo, bas dekho. 10-15 min mein apne aap chali jaati hai.</div></div></div>
+<div class="tech"><div class="ti">📵</div><div><div class="tn">4. Trigger Hatao</div><div class="td">Phone door rakho, room se bahar jao, ya kisi dost ko call karo. Jis cheez ne trigger kiya use turant badlo.</div></div></div>
+<div class="tech"><div class="ti">🎯</div><div><div class="tn">5. Apna "Why" yaad karo</div><div class="td">Streak, goal aur jo insaan banna chahte ho usse yaad karo. 10 din ki mehnat 1 minute mein barbaad mat karo.</div></div></div>
+</div>
+
+<button class="b1" onclick="window.resistUrge()" style="margin-top:6px">✅ I Resisted! (+5 XP)</button>
+<br><br>
+<button class="cb" onclick="window.closeBreath()" style="margin-bottom:16px">Close</button>
+</div>
+</div>
+
+<!-- MODAL: ADD CHALLENGE -->
+<div class="mo" id="mC" onclick="if(event.target===this)window.closeMC()">
+<div class="ms">
+<h3 id="mcTitle">🔥 Custom Challenge</h3>
+<input type="text" id="cNm" placeholder="Challenge name (e.g. No Sugar)">
+<select id="cLen">
+<option value="7">7 Days</option>
+<option value="14">14 Days</option>
+<option value="21">21 Days</option>
+</select>
+<div class="mbtns">
+<button class="mc" onclick="window.closeMC()">Cancel</button>
+<button class="mf" onclick="window.addCustomCh()">Start 🔥</button>
+</div>
+</div>
+</div>
+
+<!-- MODAL: HABIT DETAIL / TRACKER -->
+<div class="mo" id="mD" onclick="if(event.target===this)window.closeHabitDetail()">
+<div class="ms">
+<div class="dhead">
+<div class="di" id="dIcon">🎯</div>
+<div style="flex:1"><div class="dn" id="dName">Habit</div><div class="dc" id="dCat"></div></div>
+<button class="hc" id="dToggle" onclick="window.togDetailHabit()" style="width:34px;height:34px;border-radius:50%;border:2px solid var(--accent2);background:transparent;color:var(--accent2);font-size:1rem;cursor:pointer"></button>
+</div>
+<div class="dstats">
+<div class="dstat"><div class="dv" id="dStreak">0</div><div class="dl">Current 🔥</div></div>
+<div class="dstat"><div class="dv" id="dBest">0</div><div class="dl">Best 🏆</div></div>
+<div class="dstat"><div class="dv" id="dTotal">0</div><div class="dl">Total ✅</div></div>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-weight:600;font-size:.82rem">🗓️ <span id="dMonth"></span></span><span style="font-size:.64rem;color:var(--muted)" id="dRate">0%</span></div>
+<div class="heat" id="dHeat"></div>
+<div class="mbtns" style="margin-top:14px">
+<button class="mc" onclick="window.openEditFromDetail()">✏️ Edit</button>
+<button class="mf" onclick="window.closeHabitDetail()">Done</button>
+</div>
+</div>
+</div>
+
+<!-- TOAST -->
+<div class="ts" id="tst"></div>
+
+<script>
+/* ===== STATE ===== */
+var D = {
+  habits: [],
+  goals: [],
+  journal: [],
+  jnames: ['Radhe Radhe','Hare Krishna','Radha Krishna','Hare Rama','Shyam','Radha Rani','Om Namah Shivaya','Jai Shri Ram'],
+  selName: '',
+  jcount: 0,
+  malas: 0,
+  urges: 0,
+  xp: 0,
+  streak: 0,
+  bestStreak: 0,
+  lastDate: '',
+  // ---- NEW ----
+  history: {},           // { 'Mon Jun 30 2026': {done:n, total:n} }
+  achievements: [],      // unlocked achievement ids
+  totalDone: 0,          // lifetime habit completions
+  totalGoals: 0,         // lifetime goals created
+  theme: 'dark',
+  accent: 'violet',
+  sound: true,
+  haptic: true,
+  loginStreak: 0,
+  lastLogin: '',
+  curMood: '',
+  // ---- v5: hourly control + challenges ----
+  hours: [],             // 24 booleans for today's controlled hours
+  hoursDate: '',         // date string the hours belong to
+  bestHours: 0,          // best single-day controlled-hour count
+  challenges: [],        // active challenges
+  catFilter: 'all',      // habit category filter
+  // ---- v6: per-habit tracker + urge log ----
+  urgeLog: [],           // [{dt, resisted:true/false, note}]
+  urgeStreak: 0,         // current days without giving in
+  bestUrgeStreak: 0,
+  lastUrgeFail: '',      // date string of last "gave in"
+  detailHabit: -1        // which habit's detail is open (-1 none)
+};
+var TITLES = ['Seeker','Disciple','Devotee','Practitioner','Warrior','Champion','Master','Titan','Legend','Divine'];
+
+/* accent palettes */
+var ACCENTS = {
+  violet:{a:'#6C63FF',b:'#FF6584',g:'#FFD93D'},
+  ocean:{a:'#2EC5CE',b:'#3A7BD5',g:'#FFD93D'},
+  sunset:{a:'#FF8008',b:'#FF6584',g:'#FFE36E'},
+  forest:{a:'#43C463',b:'#1D976C',g:'#FFD93D'},
+  rose:{a:'#FF6584',b:'#C779D0',g:'#FFD93D'},
+  gold:{a:'#E0A800',b:'#FF8008',g:'#FFE36E'}
+};
+
+/* quotes rotate daily */
+var QUOTES = [
+  ['The pain you feel today will be the strength you feel tomorrow.','Anonymous'],
+  ['Discipline is choosing between what you want now and what you want most.','Abraham Lincoln'],
+  ['We are what we repeatedly do. Excellence is a habit.','Aristotle'],
+  ['Mann ko jeet liya, toh jag jeet liya.','Proverb'],
+  ['Rule your mind or it will rule you.','Horace'],
+  ['Small daily improvements lead to stunning results.','Robin Sharma'],
+  ['He who conquers himself is the mightiest warrior.','Confucius'],
+  ['Sabar ka phal meetha hota hai.','Proverb'],
+  ['Energy and persistence conquer all things.','Benjamin Franklin'],
+  ['The successful warrior is the average man with laser focus.','Bruce Lee']
+];
+
+/* achievement definitions */
+var ACHS = [
+  {id:'first_habit', i:'🌱', t:'First Step', d:'Add your first habit'},
+  {id:'streak7',     i:'🔥', t:'On Fire', d:'Reach a 7-day streak'},
+  {id:'streak30',    i:'🏔️', t:'Unstoppable', d:'Reach a 30-day streak'},
+  {id:'urge10',      i:'🛡️', t:'Iron Will', d:'Resist 10 urges'},
+  {id:'urge50',      i:'⚔️', t:'Master of Self', d:'Resist 50 urges'},
+  {id:'mala1',       i:'📿', t:'First Mala', d:'Complete 1 mala (108)'},
+  {id:'mala11',      i:'🕉️', t:'Devotee', d:'Complete 11 malas'},
+  {id:'goal1',       i:'🎯', t:'Goal Getter', d:'Complete a goal'},
+  {id:'lvl5',        i:'⭐', t:'Rising Star', d:'Reach level 5'},
+  {id:'lvl10',       i:'👑', t:'Divine', d:'Reach level 10'},
+  {id:'journal7',    i:'📖', t:'Reflective', d:'Write 7 journal entries'},
+  {id:'login7',      i:'📅', t:'Consistent', d:'7-day login streak'}
+];
+
+/* preset ready-made challenges (per length picked) */
+var PRESETS = [
+  {icon:'📵', name:'No Reels / Shorts', desc:'Roz short videos se door raho'},
+  {icon:'🚭', name:'NoFap / Self Control', desc:'Apne mann pe poora control'},
+  {icon:'🌅', name:'Wake up 5 AM', desc:'Subah jaldi utho, din jeeto'},
+  {icon:'💪', name:'Daily Workout', desc:'Har din kasrat / exercise'},
+  {icon:'🍬', name:'No Sugar', desc:'Cheeni / junk food band'},
+  {icon:'📵', name:'No Phone after 10PM', desc:'Raat ko phone door rakho'},
+  {icon:'📖', name:'Read 20 min', desc:'Roz padho, dimaag tej karo'},
+  {icon:'🙏', name:'Daily Jaap / Meditation', desc:'Roz spiritual practice'}
+];
+
+var editingHabit = -1;
+var editingGoal = -1;
+var lastLevel = 1;
+var chDaysSel = 7;
+var urgeMode = 'breath';
+
+/* ===== SAVE / LOAD ===== */
+function loadData() {
+  try {
+    var raw = localStorage.getItem('sc_v4') || localStorage.getItem('sc_v3');
+    if (raw) {
+      var obj = JSON.parse(raw);
+      for (var k in obj) { D[k] = obj[k]; }
+    }
+  } catch(e) { console.log('load err', e); }
+  lastLevel = getLvl();
+}
+
+function saveData() {
+  D.lastDate = new Date().toDateString();
+  try { localStorage.setItem('sc_v4', JSON.stringify(D)); } catch(e) { console.log('save err', e); }
+}
+
+/* ===== THEME / ACCENT ===== */
+function applyTheme() {
+  document.body.classList.toggle('light', D.theme === 'light');
+  var p = ACCENTS[D.accent] || ACCENTS.violet;
+  var r = document.documentElement.style;
+  r.setProperty('--accent', p.a);
+  r.setProperty('--accent2', p.b);
+  r.setProperty('--gold', p.g);
+}
+function setTheme(t) { D.theme = t; saveData(); applyTheme(); renderSettings(); }
+window.setTheme = setTheme;
+function setAccent(name) { D.accent = name; saveData(); applyTheme(); renderSettings(); ping(); }
+window.setAccent = setAccent;
+
+/* ===== PREFS ===== */
+function togglePref(k) { D[k] = !D[k]; saveData(); renderSettings(); if (D[k]) ping(); }
+window.togglePref = togglePref;
+
+/* ===== SOUND + HAPTIC ===== */
+var AC = null;
+function beep(freq, dur, type) {
+  if (!D.sound) return;
+  try {
+    if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+    var o = AC.createOscillator(), g = AC.createGain();
+    o.type = type || 'sine'; o.frequency.value = freq;
+    o.connect(g); g.connect(AC.destination);
+    g.gain.setValueAtTime(0.0001, AC.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.18, AC.currentTime + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, AC.currentTime + (dur || 0.12));
+    o.start(); o.stop(AC.currentTime + (dur || 0.12));
+  } catch(e) {}
+}
+function buzz(ms) { if (D.haptic && navigator.vibrate) try { navigator.vibrate(ms || 15); } catch(e) {} }
+function ping() { beep(660, 0.08); buzz(12); }
+function chime() { beep(523, 0.1); setTimeout(function(){ beep(784, 0.16); }, 90); buzz(30); }
+
+/* ===== DAILY LOGIN STREAK ===== */
+function checkLogin() {
+  var today = new Date().toDateString();
+  if (D.lastLogin === today) return;
+  var y = new Date(); y.setDate(y.getDate() - 1);
+  if (D.lastLogin === y.toDateString()) D.loginStreak = (D.loginStreak || 0) + 1;
+  else D.loginStreak = 1;
+  D.lastLogin = today;
+  saveData();
+}
+
+/* ===== NEW DAY ===== */
+function checkDay() {
+  var today = new Date().toDateString();
+  if (D.lastDate && D.lastDate !== today) {
+    // record the day that just ended into history
+    var done = 0, total = D.habits.length;
+    for (var i = 0; i < total; i++) { if (D.habits[i].done) done++; }
+    if (total > 0) { D.history[D.lastDate] = { done: done, total: total }; }
+    for (var i = 0; i < D.habits.length; i++) {
+      // new day: uncheck; streak now derives from each habit's own log
+      D.habits[i].done = false;
+      D.habits[i].sk = habitStreak(ensureHabit(D.habits[i]));
+    }
+    D.lastDate = today;
+    saveData();
+  }
+}
+
+/* ===== HOURLY CONTROL ===== */
+function checkHours() {
+  var today = new Date().toDateString();
+  if (D.hoursDate !== today || !Array.isArray(D.hours) || D.hours.length !== 24) {
+    // save yesterday's count into history-ish best, then reset
+    D.hours = [];
+    for (var i = 0; i < 24; i++) D.hours.push(false);
+    D.hoursDate = today;
+    saveData();
+  }
+}
+function hoursDone() {
+  var n = 0;
+  for (var i = 0; i < 24; i++) { if (D.hours[i]) n++; }
+  return n;
+}
+function fmtHour(h) {
+  var ap = h < 12 ? 'AM' : 'PM';
+  var hh = h % 12; if (hh === 0) hh = 12;
+  return hh + ap;
+}
+function togHour(h) {
+  D.hours[h] = !D.hours[h];
+  var n = hoursDone();
+  if (D.hours[h]) { addXP(2); beep(700, 0.06); buzz(10); }
+  else { D.xp = Math.max(0, D.xp - 2); }
+  if (n > (D.bestHours || 0)) D.bestHours = n;
+  if (n === 24) { confetti(); chime(); toast('🏆 Poora din control! +24 hrs'); }
+  saveData();
+  renderHome();
+  renderReview();
+}
+window.togHour = togHour;
+function markNowHour() {
+  var h = new Date().getHours();
+  if (!D.hours[h]) togHour(h);
+  else toast('Is ghante ko already mark kiya hai ✅');
+}
+window.markNowHour = markNowHour;
+
+function renderHours() {
+  var grid = document.getElementById('hourGrid');
+  if (!grid) return;
+  var nowH = new Date().getHours();
+  var html = '';
+  for (var h = 0; h < 24; h++) {
+    var on = D.hours[h] ? ' on' : '';
+    var now = h === nowH ? ' now' : '';
+    var mark = D.hours[h] ? '<span class="ck">✅</span>' : (h <= nowH ? '·' : '');
+    html += '<div class="hcell' + on + now + '" onclick="window.togHour(' + h + ')"><span class="hh">' + fmtHour(h) + '</span>' + mark + '</div>';
+  }
+  grid.innerHTML = html;
+  var done = hoursDone();
+  var pct = Math.round(done / 24 * 100);
+  document.getElementById('hourSummary').textContent = done + ' / 24';
+  document.getElementById('hourPct').textContent = pct + '%';
+  var vh = document.getElementById('vHours'); if (vh) vh.textContent = done + '/24';
+  var ring = document.getElementById('hourRing');
+  if (ring) {
+    var circ = 2 * Math.PI * 38; // ~238.76
+    ring.style.strokeDashoffset = (circ * (1 - done / 24)).toFixed(2);
+  }
+}
+
+/* ===== LEVEL ===== */
+function getLvl() { return Math.floor(D.xp / 200) + 1; }
+function getTtl() { return TITLES[Math.min(getLvl() - 1, TITLES.length - 1)]; }
+function xpInLvl() { return D.xp % 200; }
+
+/* central XP add that catches level-ups */
+function addXP(n) {
+  D.xp = Math.max(0, D.xp + n);
+  var nl = getLvl();
+  if (nl > lastLevel) { lastLevel = nl; showLvUp(nl); }
+  checkAch();
+}
+
+/* ===== LEVEL UP OVERLAY ===== */
+function showLvUp(lvl) {
+  document.getElementById('lvNum').textContent = lvl;
+  document.getElementById('lvTtl').textContent = TITLES[Math.min(lvl - 1, TITLES.length - 1)];
+  document.getElementById('lvUp').classList.add('show');
+  chime(); confetti();
+}
+function closeLvUp() { document.getElementById('lvUp').classList.remove('show'); }
+window.closeLvUp = closeLvUp;
+
+/* ===== CONFETTI ===== */
+function confetti() {
+  var box = document.getElementById('cfx');
+  var cols = ['#6C63FF','#FF6584','#FFD93D','#43C463','#2EC5CE'];
+  for (var i = 0; i < 60; i++) {
+    var p = document.createElement('div');
+    p.className = 'cfp';
+    p.style.left = Math.random() * 100 + 'vw';
+    p.style.background = cols[Math.floor(Math.random() * cols.length)];
+    p.style.animationDuration = (1.6 + Math.random() * 1.4) + 's';
+    p.style.animationDelay = (Math.random() * 0.3) + 's';
+    box.appendChild(p);
+    (function(el){ setTimeout(function(){ if (el.parentNode) el.parentNode.removeChild(el); }, 3200); })(p);
+  }
+}
+
+/* ===== ACHIEVEMENTS ===== */
+function unlock(id) {
+  if (D.achievements.indexOf(id) !== -1) return;
+  D.achievements.push(id);
+  var a = ACHS.filter(function(x){ return x.id === id; })[0];
+  if (a) { toast(a.i + ' Achievement: ' + a.t + '!'); chime(); confetti(); }
+}
+function checkAch() {
+  if (D.habits.length >= 1) unlock('first_habit');
+  if (D.bestStreak >= 7) unlock('streak7');
+  if (D.bestStreak >= 30) unlock('streak30');
+  if (D.urges >= 10) unlock('urge10');
+  if (D.urges >= 50) unlock('urge50');
+  if (D.malas >= 1) unlock('mala1');
+  if (D.malas >= 11) unlock('mala11');
+  var gd = 0; for (var i = 0; i < D.goals.length; i++) { if (D.goals[i].cur >= D.goals[i].tgt) gd++; }
+  if (gd >= 1) unlock('goal1');
+  if (getLvl() >= 5) unlock('lvl5');
+  if (getLvl() >= 10) unlock('lvl10');
+  if (D.journal.length >= 7) unlock('journal7');
+  if (D.loginStreak >= 7) unlock('login7');
+}
+
+/* ===== CHALLENGES ===== */
+function todayKey() { return new Date().toDateString(); }
+function dayDiff(a, b) { return Math.round((new Date(b) - new Date(a)) / 86400000); }
+
+/* validate streak: if user missed a day (gap >1 since lastCheck), reset progress */
+function validateCh(c) {
+  if (!c.lastCheck) return;
+  var gap = dayDiff(c.lastCheck, todayKey());
+  if (gap > 1) {
+    // missed at least one full day -> fail, restart
+    c.done = 0;
+    c.failed = true;
+    c.start = todayKey();
+    c.lastCheck = '';
+  }
+}
+
+function checkAllChallenges() {
+  for (var i = 0; i < D.challenges.length; i++) validateCh(D.challenges[i]);
+}
+
+function setChDays(n) {
+  chDaysSel = n;
+  document.getElementById('cd7').classList.toggle('a', n === 7);
+  document.getElementById('cd14').classList.toggle('a', n === 14);
+  document.getElementById('cd21').classList.toggle('a', n === 21);
+  renderPresets();
+}
+window.setChDays = setChDays;
+
+function joinPreset(idx) {
+  var p = PRESETS[idx];
+  D.challenges.push({ name: p.name, icon: p.icon, len: chDaysSel, done: 0, start: todayKey(), lastCheck: '', failed: false });
+  saveData();
+  renderChallenges();
+  toast('🔥 Challenge started: ' + p.name + ' (' + chDaysSel + ' din)');
+  ping();
+}
+window.joinPreset = joinPreset;
+
+function checkInCh(i) {
+  var c = D.challenges[i];
+  if (c.lastCheck === todayKey()) { toast('Aaj already done ✅ — kal phir!'); return; }
+  c.done++;
+  c.lastCheck = todayKey();
+  c.failed = false;
+  addXP(15);
+  ping();
+  if (c.done >= c.len) {
+    addXP(150);
+    confetti(); chime();
+    toast('🏆 ' + c.name + ' — ' + c.len + ' day challenge COMPLETE! +150 XP');
+  } else {
+    toast('✅ Day ' + c.done + '/' + c.len + ' done! +15 XP');
+  }
+  saveData();
+  renderChallenges();
+}
+window.checkInCh = checkInCh;
+
+function restartCh(i) {
+  var c = D.challenges[i];
+  c.done = 0; c.start = todayKey(); c.lastCheck = ''; c.failed = false;
+  saveData(); renderChallenges(); toast('🔄 Restarted: ' + c.name);
+}
+window.restartCh = restartCh;
+
+function delCh(i) {
+  if (!confirm('Challenge chhod do "' + D.challenges[i].name + '"?')) return;
+  D.challenges.splice(i, 1);
+  saveData(); renderChallenges(); toast('🗑️ Challenge removed');
+}
+window.delCh = delCh;
+
+function openMC() {
+  document.getElementById('cNm').value = '';
+  document.getElementById('cLen').value = '7';
+  document.getElementById('mC').classList.add('show');
+}
+function closeMC() { document.getElementById('mC').classList.remove('show'); }
+window.openMC = openMC;
+window.closeMC = closeMC;
+
+function addCustomCh() {
+  var nm = document.getElementById('cNm').value.trim();
+  var len = parseInt(document.getElementById('cLen').value) || 7;
+  if (!nm) { toast('⚠️ Challenge ka naam daalo!'); return; }
+  D.challenges.push({ name: nm, icon: '🎯', len: len, done: 0, start: todayKey(), lastCheck: '', failed: false });
+  saveData();
+  closeMC();
+  renderChallenges();
+  toast('🔥 "' + nm + '" started! (' + len + ' din)');
+}
+window.addCustomCh = addCustomCh;
+
+function renderChallenges() {
+  renderActiveCh();
+  renderPresets();
+}
+
+function renderActiveCh() {
+  var el = document.getElementById('activeCh');
+  if (!el) return;
+  if (D.challenges.length === 0) {
+    el.innerHTML = '<div class="es"><div class="ei">🔥</div>Koi active challenge nahi — neeche se ek chuno!</div>';
+    return;
+  }
+  var html = '';
+  for (var i = 0; i < D.challenges.length; i++) {
+    var c = D.challenges[i];
+    var complete = c.done >= c.len;
+    var doneToday = c.lastCheck === todayKey();
+    var pct = Math.round(c.done / c.len * 100);
+    html += '<div class="chc">';
+    html += '<div class="chh"><div><div class="chn">' + c.icon + ' ' + esc(c.name) + '</div><div class="chd">' + (complete ? '🏆 Completed!' : 'Day ' + c.done + ' of ' + c.len) + (c.failed ? ' · ⚠️ miss hua tha, restart' : '') + '</div></div><div class="chbadge">' + c.len + 'D</div></div>';
+    html += '<div class="chprog"><i style="width:' + pct + '%"></i></div>';
+    // day boxes
+    html += '<div class="chdays">';
+    for (var d = 0; d < c.len; d++) {
+      var cls = 'chday';
+      if (d < c.done) cls += ' done';
+      if (d === c.done && !complete) cls += ' today';
+      html += '<div class="' + cls + '">' + (d < c.done ? '✓' : (d + 1)) + '</div>';
+    }
+    html += '</div>';
+    html += '<div class="chrow">';
+    if (complete) {
+      html += '<button style="background:rgba(67,196,99,.2);color:#43C463" onclick="window.restartCh(' + i + ')">🔄 Dobara</button>';
+    } else if (doneToday) {
+      html += '<button style="background:rgba(127,127,127,.2);color:var(--muted)" disabled>✅ Aaj done</button>';
+    } else {
+      html += '<button style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff" onclick="window.checkInCh(' + i + ')">✅ Aaj ka check-in (+15 XP)</button>';
+    }
+    html += '<button style="background:rgba(255,82,82,.15);color:#ff6b6b;flex:0 0 auto;padding:8px 12px" onclick="window.delCh(' + i + ')">🗑️</button>';
+    html += '</div></div>';
+  }
+  el.innerHTML = html;
+}
+
+function renderPresets() {
+  var el = document.getElementById('presetCh');
+  if (!el) return;
+  var html = '';
+  for (var i = 0; i < PRESETS.length; i++) {
+    var p = PRESETS[i];
+    html += '<div class="chc"><div class="chh"><div><div class="chn">' + p.icon + ' ' + p.name + '</div><div class="chd">' + p.desc + '</div></div>';
+    html += '<button class="b2" onclick="window.joinPreset(' + i + ')">Start ' + chDaysSel + 'D</button></div></div>';
+  }
+  el.innerHTML = html;
+}
+
+/* ===== URGE VIEW TOGGLE ===== */
+function urgeView(mode) {
+  urgeMode = mode;
+  document.getElementById('urgeBreath').style.display = mode === 'breath' ? 'block' : 'none';
+  document.getElementById('urgeTech').style.display = mode === 'tech' ? 'block' : 'none';
+  document.getElementById('ubBreath').classList.toggle('a', mode === 'breath');
+  document.getElementById('ubTech').classList.toggle('a', mode === 'tech');
+}
+window.urgeView = urgeView;
+
+/* ===== TOAST ===== */
+function toast(msg) {
+  var el = document.getElementById('tst');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(function() { el.classList.remove('show'); }, 2200);
+}
+
+/* ===== NAVIGATION ===== */
+function goPage(idx) {
+  var pages = document.querySelectorAll('.pg');
+  var btns = document.querySelectorAll('.nb');
+  for (var i = 0; i < pages.length; i++) {
+    pages[i].classList.remove('a');
+    btns[i].classList.remove('a');
+  }
+  pages[idx].classList.add('a');
+  btns[idx].classList.add('a');
+  renderAll();
+}
+window.goPage = goPage;
+
+/* ===== RENDER ALL ===== */
+function renderAll() {
+  renderHome();
+  renderHabits();
+  renderChallenges();
+  renderJaap();
+  renderGoals();
+  renderJournal();
+  renderReview();
+  renderSettings();
+}
+
+/* ===== WEEKLY CALENDAR ===== */
+function renderWeek() {
+  var el = document.getElementById('weekCal');
+  if (!el) return;
+  var labels = ['S','M','T','W','T','F','S'];
+  var today = new Date();
+  var todayStr = today.toDateString();
+  var html = '', weekDone = 0, weekTotal = 0;
+  for (var i = 6; i >= 0; i--) {
+    var d = new Date(); d.setDate(today.getDate() - i);
+    var ds = d.toDateString();
+    var rec, isToday = (ds === todayStr);
+    if (isToday) {
+      var done = 0, total = D.habits.length;
+      for (var j = 0; j < total; j++) { if (D.habits[j].done) done++; }
+      rec = { done: done, total: total };
+    } else {
+      rec = D.history[ds] || null;
+    }
+    var cls = 'wbox', txt = '·';
+    if (isToday) cls += ' today';
+    if (rec && rec.total > 0) {
+      weekDone += rec.done; weekTotal += rec.total;
+      if (rec.done >= rec.total) { cls += ' done'; txt = '✓'; }
+      else if (rec.done > 0) { cls += ' partial'; txt = rec.done; }
+      else { txt = '·'; }
+    }
+    html += '<div class="wd"><div class="wl">' + labels[d.getDay()] + '</div><div class="' + cls + '">' + txt + '</div></div>';
+  }
+  el.innerHTML = html;
+  var wp = weekTotal > 0 ? Math.round(weekDone / weekTotal * 100) : 0;
+  document.getElementById('weekPct').textContent = wp + '% done';
+}
+
+/* ---- HOME ---- */
+function renderHome() {
+  var total = D.habits.length;
+  var done = 0;
+  for (var i = 0; i < total; i++) { if (D.habits[i].done) done++; }
+  var pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+  document.getElementById('v0').textContent = pct + '%';
+  document.getElementById('v1').textContent = done + '/' + total;
+  document.getElementById('v3').textContent = D.urges;
+  document.getElementById('v4').textContent = D.streak;
+  document.getElementById('v5').textContent = D.xp;
+  document.getElementById('v6').textContent = done + ' / ' + total;
+  document.getElementById('v7').style.width = pct + '%';
+
+  // quote of the day
+  var qi = (new Date().getDate() + new Date().getMonth()) % QUOTES.length;
+  var qel = document.querySelector('.qt');
+  if (qel) qel.innerHTML = '<p>"' + QUOTES[qi][0] + '"</p><a>— ' + QUOTES[qi][1] + '</a>';
+
+  renderWeek();
+  renderHours();
+  renderUrge();
+
+  var el = document.getElementById('hHome');
+  if (total === 0) {
+    el.innerHTML = '<div class="es"><div class="ei">📋</div>Pehla habit add karo — neeche "Habits" tab se 💪</div>';
+  } else {
+    el.innerHTML = habitRows(false);
+  }
+}
+
+/* shared habit row builder; full=true adds edit/delete buttons */
+function habitRows(full, filterCat) {
+  var html = '';
+  for (var i = 0; i < D.habits.length; i++) {
+    var h = ensureHabit(D.habits[i]);
+    if (filterCat && filterCat !== 'all' && h.cat !== filterCat) continue;
+    var dc = h.done ? ' d' : '';
+    var cc = h.done ? ' c' : '';
+    var ct = h.done ? '\u2713' : '';
+    var rate = habitRate30(h);
+    html += '<div class="hi2' + dc + '">';
+    // top row
+    html += '<div class="hi2top">';
+    html += '<span style="font-size:1.2rem;width:26px;text-align:center;flex-shrink:0">' + (h.icon || '\uD83C\uDFAF') + '</span>';
+    html += '<div style="flex:1;min-width:0"><div class="hn">' + esc(h.name) + '</div><div class="hm">' + h.cat + ' \u00B7 🔥' + (h.sk || 0) + 'd · 🏆' + (h.best || 0) + 'd · ' + rate + '%</div>';
+    if (h.note) html += '<div class="note">📌 ' + esc(h.note) + '</div>';
+    html += '</div>';
+    html += '<button class="hc' + cc + '" onclick="window.togH(' + i + ')">' + ct + '</button>';
+    html += '</div>';
+    // per-habit week tracker
+    html += '<div class="hi2bot">';
+    html += habitWeekDots(h);
+    html += '<div class="hi2act">';
+    html += '<button class="iconbtn" onclick="window.openHabitDetail(' + i + ')" title="Stats">📊</button>';
+    if (full) {
+      if (i > 0) html += '<button class="iconbtn" onclick="window.moveHabit(' + i + ',-1)" title="Up">▲</button>';
+      html += '<button class="iconbtn" onclick="window.openEditH(' + i + ')">✏️</button>';
+      html += '<button class="iconbtn dl" onclick="window.delHabit(' + i + ')">🗑️</button>';
+    }
+    html += '</div></div>';
+    html += '</div>';
+  }
+  return html;
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ---- HABITS PAGE ---- */
+function renderHabits() {
+  document.getElementById('x0').textContent = getLvl();
+  document.getElementById('x1').textContent = getTtl();
+  document.getElementById('x2').textContent = D.xp;
+
+  // category filter tabs
+  var cf = document.getElementById('catFilter');
+  if (cf) {
+    var cats = ['all'];
+    for (var c = 0; c < D.habits.length; c++) {
+      if (cats.indexOf(D.habits[c].cat) === -1) cats.push(D.habits[c].cat);
+    }
+    if (cats.indexOf(D.catFilter) === -1) D.catFilter = 'all';
+    var fh = '';
+    for (var c = 0; c < cats.length; c++) {
+      var lbl = cats[c] === 'all' ? 'All' : cats[c];
+      fh += '<button class="' + (D.catFilter === cats[c] ? 'a' : '') + '" onclick="window.setCatFilter(\'' + cats[c].replace(/'/g, "\\'") + '\')">' + lbl + '</button>';
+    }
+    cf.innerHTML = cats.length > 1 ? fh : '';
+  }
+
+  var el = document.getElementById('hFull');
+  var total = D.habits.length;
+  if (total === 0) {
+    el.innerHTML = '<div class="es"><div class="ei">\uD83D\uDCAA</div>Abhi koi habit nahi — upar "Add New Habit" dabao</div>';
+  } else {
+    var rows = habitRows(true, D.catFilter);
+    el.innerHTML = rows || '<div class="es">Is category mein koi habit nahi</div>';
+  }
+}
+function setCatFilter(c) { D.catFilter = c; renderHabits(); }
+window.setCatFilter = setCatFilter;
+
+/* ---- JAAP ---- */
+function renderJaap() {
+  var el = document.getElementById('jChips');
+  var html = '';
+  for (var i = 0; i < D.jnames.length; i++) {
+    var sel = D.selName === D.jnames[i] ? ' s' : '';
+    html += '<span class="chip' + sel + '" onclick="window.selJName(' + i + ')">' + D.jnames[i] + ' <span class="rx" onclick="event.stopPropagation();window.delJName(' + i + ')">\u2715</span></span>';
+  }
+  el.innerHTML = html;
+
+  var panel = document.getElementById('jPanel');
+  if (D.selName) {
+    panel.style.display = 'block';
+    document.getElementById('jName').textContent = D.selName;
+    document.getElementById('jCnt').textContent = D.jcount;
+    document.getElementById('jMala').textContent = (D.jcount % 108) + '/108';
+    document.getElementById('jMC').textContent = D.malas;
+    updateDots();
+  } else {
+    panel.style.display = 'none';
+  }
+}
+
+function updateDots() {
+  var inMala = D.jcount % 108;
+  var dots = document.querySelectorAll('.mdot');
+  for (var i = 0; i < dots.length; i++) {
+    if (i * 2 < inMala) dots[i].classList.add('on');
+    else dots[i].classList.remove('on');
+  }
+}
+
+/* ---- GOALS ---- */
+function renderGoals() {
+  var el = document.getElementById('gFull');
+  var total = D.goals.length;
+  if (total === 0) {
+    el.innerHTML = '<div class="es"><div class="ei">\uD83C\uDFAF</div>No goals yet</div>';
+  } else {
+    var html = '';
+    for (var i = 0; i < total; i++) {
+      var g = D.goals[i];
+      var pct = Math.min(100, Math.round((g.cur / g.tgt) * 100));
+      var doneFlag = g.cur >= g.tgt ? ' ✅' : '';
+      html += '<div class="gi">';
+      html += '<div class="gn">\uD83C\uDFAF ' + esc(g.name) + doneFlag + '</div>';
+      html += '<div class="gbar"><div class="gfill" style="width:' + pct + '%"></div></div>';
+      html += '<div class="gf"><span class="gt">' + g.cur + ' / ' + g.tgt + ' (' + pct + '%)</span>';
+      html += '<div class="ga"><button class="inc" onclick="window.incGoal(' + i + ')">+1</button><button class="inc" style="background:rgba(127,127,127,.25)" onclick="window.decGoal(' + i + ')">−1</button><button class="del" onclick="window.openEditG(' + i + ')">✏️</button><button class="del" onclick="window.delGoal(' + i + ')">\uD83D\uDDD1\uFE0F</button></div></div>';
+      if (g.dl) {
+        var days = Math.ceil((new Date(g.dl) - new Date()) / 86400000);
+        var dlc = days < 0 ? ' over' : '';
+        var dtxt = days < 0 ? ('⏰ ' + Math.abs(days) + 'd overdue') : (days === 0 ? '⏰ Due today!' : '⏰ ' + days + 'd left');
+        html += '<div class="gdl' + dlc + '">' + dtxt + '</div>';
+      }
+      html += '</div>';
+    }
+    el.innerHTML = html;
+  }
+}
+
+/* ---- JOURNAL ---- */
+function renderJournal() {
+  // reflect selected mood
+  var sel = document.getElementById('moodSel');
+  if (sel) {
+    var mbs = sel.querySelectorAll('.mb');
+    for (var m = 0; m < mbs.length; m++) {
+      mbs[m].classList.toggle('a', mbs[m].getAttribute('data-m') === D.curMood);
+    }
+  }
+  var el = document.getElementById('jEnts');
+  var sb = document.getElementById('jSearch');
+  var q = sb ? sb.value.trim().toLowerCase() : '';
+  var list = D.journal;
+  if (q) list = list.filter(function(e){ return (e.tx || '').toLowerCase().indexOf(q) !== -1; });
+  if (list.length === 0) {
+    el.innerHTML = '<div class="es"><div class="ei">\uD83D\uDCDD</div>' + (q ? 'No matches' : 'No entries yet') + '</div>';
+  } else {
+    var html = '';
+    var mx = Math.min(30, list.length);
+    for (var i = 0; i < mx; i++) {
+      var dt = new Date(list[i].dt).toLocaleDateString('en-IN', { weekday: 'short', month: 'short', day: 'numeric' });
+      var mood = list[i].mood ? '<span class="jmood">' + list[i].mood + '</span>' : '';
+      html += '<div class="je">' + mood + '<div class="jd">' + dt + '</div><div class="jt">' + esc(list[i].tx) + '</div></div>';
+    }
+    el.innerHTML = html;
+  }
+}
+window.renderJournal = renderJournal;
+
+/* ---- REVIEW ---- */
+function renderReview() {
+  document.getElementById('r0').textContent = D.bestStreak;
+  document.getElementById('r1').textContent = D.urges;
+  document.getElementById('r2').textContent = getLvl();
+  var gd = 0;
+  for (var i = 0; i < D.goals.length; i++) { if (D.goals[i].cur >= D.goals[i].tgt) gd++; }
+  document.getElementById('r3').textContent = gd;
+  document.getElementById('r4').textContent = D.jcount;
+  document.getElementById('r5').textContent = D.xp;
+  document.getElementById('ls0').textContent = D.totalDone || 0;
+  document.getElementById('ls1').textContent = D.totalGoals || 0;
+  document.getElementById('ls2').textContent = D.journal.length;
+  document.getElementById('ls3').textContent = D.malas;
+  document.getElementById('ls4').textContent = D.loginStreak || 0;
+  var l5 = document.getElementById('ls5'); if (l5) l5.textContent = D.bestHours || 0;
+  var l6 = document.getElementById('ls6'); if (l6) l6.textContent = D.challenges.length;
+  recordToday();
+  renderBarChart();
+  renderHeatmap();
+}
+
+/* helper: get habit completion % for a date (0-100) or -1 if no data */
+function dayPct(ds, isToday) {
+  var rec;
+  if (isToday) {
+    var done = 0, total = D.habits.length;
+    for (var j = 0; j < total; j++) { if (D.habits[j].done) done++; }
+    rec = total > 0 ? { done: done, total: total } : null;
+  } else {
+    rec = D.history[ds] || null;
+  }
+  if (!rec || rec.total === 0) return -1;
+  return Math.round(rec.done / rec.total * 100);
+}
+
+function renderBarChart() {
+  var el = document.getElementById('barChart');
+  if (!el) return;
+  var labels = ['S','M','T','W','T','F','S'];
+  var today = new Date();
+  var html = '';
+  for (var i = 6; i >= 0; i--) {
+    var d = new Date(); d.setDate(today.getDate() - i);
+    var isToday = d.toDateString() === today.toDateString();
+    var p = dayPct(d.toDateString(), isToday);
+    var h = p < 0 ? 0 : p;
+    var lbl = p < 0 ? '' : '<small>' + p + '</small>';
+    html += '<div class="bcol"><div class="bbar" style="height:' + Math.max(h, h > 0 ? 8 : 2) + '%;opacity:' + (p < 0 ? '.25' : '1') + '">' + lbl + '</div><div class="blbl">' + labels[d.getDay()] + '</div></div>';
+  }
+  el.innerHTML = html;
+}
+
+function renderHeatmap() {
+  var el = document.getElementById('heatMap');
+  if (!el) return;
+  var now = new Date();
+  document.getElementById('hmMonth').textContent = now.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+  var year = now.getFullYear(), month = now.getMonth();
+  var first = new Date(year, month, 1);
+  var daysInMonth = new Date(year, month + 1, 0).getDate();
+  var startDow = first.getDay();
+  var caps = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  var html = '';
+  for (var c = 0; c < 7; c++) html += '<div class="hcap">' + caps[c] + '</div>';
+  for (var b = 0; b < startDow; b++) html += '<div class="hd blank"></div>';
+  for (var day = 1; day <= daysInMonth; day++) {
+    var d = new Date(year, month, day);
+    var isToday = d.toDateString() === now.toDateString();
+    var p = dayPct(d.toDateString(), isToday);
+    var cls = 'hd';
+    if (p >= 0) {
+      if (p >= 100) cls += ' l4';
+      else if (p >= 66) cls += ' l3';
+      else if (p >= 33) cls += ' l2';
+      else if (p > 0) cls += ' l1';
+    }
+    if (isToday) cls += ' tdy';
+    html += '<div class="' + cls + '">' + day + '</div>';
+  }
+  el.innerHTML = html;
+}
+
+/* ---- SETTINGS ---- */
+function renderSettings() {
+  // achievements
+  var ag = document.getElementById('achGrid');
+  if (ag) {
+    var html = '';
+    for (var i = 0; i < ACHS.length; i++) {
+      var a = ACHS[i];
+      var un = D.achievements.indexOf(a.id) !== -1 ? ' un' : '';
+      html += '<div class="ach' + un + '"><div class="ai">' + a.i + '</div><div><div class="at">' + a.t + '</div><div class="ad">' + a.d + '</div></div></div>';
+    }
+    ag.innerHTML = html;
+  }
+  // theme seg
+  var td = document.getElementById('thDark'), tl = document.getElementById('thLight');
+  if (td) { td.classList.toggle('a', D.theme === 'dark'); tl.classList.toggle('a', D.theme === 'light'); }
+  // swatches
+  var sw = document.getElementById('swatches');
+  if (sw) {
+    var sh = '';
+    for (var key in ACCENTS) {
+      var p = ACCENTS[key];
+      var sel = D.accent === key ? ' a' : '';
+      sh += '<div class="sw' + sel + '" style="background:linear-gradient(135deg,' + p.a + ',' + p.b + ')" onclick="window.setAccent(\'' + key + '\')"></div>';
+    }
+    sw.innerHTML = sh;
+  }
+  // toggles
+  var ts = document.getElementById('tgSound'), th = document.getElementById('tgHaptic');
+  if (ts) ts.classList.toggle('on', !!D.sound);
+  if (th) th.classList.toggle('on', !!D.haptic);
+  var tr = document.getElementById('tgRemind');
+  if (tr) tr.classList.toggle('on', !!D.reminders && ('Notification' in window) && Notification.permission === 'granted');
+}
+
+/* ===== HABIT ACTIONS ===== */
+function togH(idx) {
+  var h = ensureHabit(D.habits[idx]);
+  var ds = new Date().toDateString();
+  h.done = !h.done;
+
+  if (h.done) {
+    h.log[ds] = true;
+    h.total = (h.total || 0) + 1;
+    D.totalDone = (D.totalDone || 0) + 1;
+    addXP(10);
+    ping();
+    // per-habit streak
+    h.sk = habitStreak(h);
+    if (h.sk > (h.best || 0)) h.best = h.sk;
+    toast('\u2705 ' + h.name + ' done! 🔥' + h.sk + 'd · +10 XP');
+    if (h.sk > 0 && h.sk % 7 === 0) {
+      addXP(50);
+      toast('\uD83D\uDD25 ' + h.name + ': ' + h.sk + ' day streak! +50 XP');
+    }
+  } else {
+    delete h.log[ds];
+    h.total = Math.max(0, (h.total || 1) - 1);
+    D.totalDone = Math.max(0, (D.totalDone || 0) - 1);
+    D.xp = Math.max(0, D.xp - 10);
+    h.sk = habitStreak(h);
+  }
+
+  // global "best streak among habits" for review
+  D.streak = 0;
+  for (var i = 0; i < D.habits.length; i++) {
+    var s = habitStreak(D.habits[i]);
+    D.habits[i].sk = s;
+    if (s > D.streak) D.streak = s;
+  }
+  if (D.streak > D.bestStreak) D.bestStreak = D.streak;
+  recordToday();
+  checkAch();
+
+  saveData();
+  renderAll();
+}
+window.togH = togH;
+
+/* keep today's habit completion in history live (for charts/heatmap) */
+function recordToday() {
+  var done = 0, total = D.habits.length;
+  for (var i = 0; i < total; i++) { if (D.habits[i].done) done++; }
+  if (total > 0) D.history[new Date().toDateString()] = { done: done, total: total };
+}
+
+/* ===== PER-HABIT TRACKER HELPERS ===== */
+function ensureHabit(h) {
+  if (!h.log) h.log = {};          // { 'Mon Jun 30 2026': true }
+  if (h.best === undefined) h.best = h.sk || 0;
+  if (h.total === undefined) {     // lifetime completions of THIS habit
+    var n = 0; for (var k in h.log) if (h.log[k]) n++;
+    h.total = n || (h.sk || 0);
+  }
+  return h;
+}
+function migrateHabits() {
+  for (var i = 0; i < D.habits.length; i++) ensureHabit(D.habits[i]);
+}
+/* did habit complete on a given date? */
+function habitDoneOn(h, ds) { return !!(h.log && h.log[ds]); }
+/* compute current streak of a habit ending today (or yesterday if not done today yet) */
+function habitStreak(h) {
+  var streak = 0;
+  var d = new Date();
+  // if not done today, start counting from yesterday
+  if (!habitDoneOn(h, d.toDateString())) d.setDate(d.getDate() - 1);
+  for (var i = 0; i < 400; i++) {
+    if (habitDoneOn(h, d.toDateString())) { streak++; d.setDate(d.getDate() - 1); }
+    else break;
+  }
+  return streak;
+}
+/* 7-day mini tracker dots for a habit */
+function habitWeekDots(h) {
+  var today = new Date();
+  var html = '<div class="htrk">';
+  var labels = ['S','M','T','W','T','F','S'];
+  for (var i = 6; i >= 0; i--) {
+    var d = new Date(); d.setDate(today.getDate() - i);
+    var ds = d.toDateString();
+    var on = habitDoneOn(h, ds) ? ' on' : '';
+    var tdy = ds === today.toDateString() ? ' tdy' : '';
+    html += '<div class="htd' + on + tdy + '" title="' + ds + '"><i>' + labels[d.getDay()] + '</i></div>';
+  }
+  html += '</div>';
+  return html;
+}
+/* per-habit completion rate over last 30 days */
+function habitRate30(h) {
+  var today = new Date(), hit = 0, tracked = 0;
+  for (var i = 0; i < 30; i++) {
+    var d = new Date(); d.setDate(today.getDate() - i);
+    tracked++;
+    if (habitDoneOn(h, d.toDateString())) hit++;
+  }
+  return Math.round(hit / tracked * 100);
+}
+
+var HABIT_SUGGESTIONS = [
+  ['No phone in bed', '🧘 Self Control'],
+  ['No reels/shorts', '🧘 Self Control'],
+  ['Cold shower', '💪 Fitness'],
+  ['Workout / Gym', '💪 Fitness'],
+  ['Drink 3L water', '🥗 Health'],
+  ['Wake up 5 AM', '⚡ Focus'],
+  ['Deep work 1 hr', '⚡ Focus'],
+  ['Read 20 min', '📚 Growth'],
+  ['Meditate', '🙏 Spiritual'],
+  ['Daily jaap', '🙏 Spiritual'],
+  ['No junk food', '🥗 Health'],
+  ['Sleep by 11 PM', '🥗 Health']
+];
+
+function renderSugg() {
+  var el = document.getElementById('suggChips');
+  if (!el) return;
+  var html = '';
+  for (var i = 0; i < HABIT_SUGGESTIONS.length; i++) {
+    html += '<span class="chip" onclick="window.pickSugg(' + i + ')">+ ' + HABIT_SUGGESTIONS[i][0] + '</span>';
+  }
+  el.innerHTML = html;
+}
+function pickSugg(i) {
+  document.getElementById('hNm').value = HABIT_SUGGESTIONS[i][0];
+  document.getElementById('hCat').value = HABIT_SUGGESTIONS[i][1];
+  ping();
+}
+window.pickSugg = pickSugg;
+
+function openMH() {
+  editingHabit = -1;
+  document.getElementById('mhTitle').textContent = '➕ New Habit';
+  document.getElementById('mhSave').textContent = '✅ Add Habit';
+  document.getElementById('hNm').value = '';
+  document.getElementById('hNote').value = '';
+  renderSugg();
+  document.getElementById('mH').classList.add('show');
+  setTimeout(function(){ var f = document.getElementById('hNm'); if (f) f.focus(); }, 200);
+}
+function closeMH() { document.getElementById('mH').classList.remove('show'); editingHabit = -1; }
+window.openMH = openMH;
+window.closeMH = closeMH;
+
+function openEditH(idx) {
+  editingHabit = idx;
+  var h = D.habits[idx];
+  document.getElementById('mhTitle').textContent = '✏️ Edit Habit';
+  document.getElementById('mhSave').textContent = 'Save';
+  document.getElementById('hNm').value = h.name;
+  document.getElementById('hCat').value = h.cat;
+  document.getElementById('hNote').value = h.note || '';
+  document.getElementById('mH').classList.add('show');
+}
+window.openEditH = openEditH;
+
+function delHabit(idx) {
+  if (!confirm('Delete "' + D.habits[idx].name + '"?')) return;
+  D.habits.splice(idx, 1);
+  saveData(); renderAll(); toast('🗑️ Habit deleted');
+}
+window.delHabit = delHabit;
+
+function moveHabit(idx, dir) {
+  var j = idx + dir;
+  if (j < 0 || j >= D.habits.length) return;
+  var tmp = D.habits[idx]; D.habits[idx] = D.habits[j]; D.habits[j] = tmp;
+  saveData(); renderAll(); ping();
+}
+window.moveHabit = moveHabit;
+
+/* ===== HABIT DETAIL / INDIVIDUAL TRACKER ===== */
+function openHabitDetail(idx) {
+  D.detailHabit = idx;
+  renderHabitDetail();
+  document.getElementById('mD').classList.add('show');
+}
+window.openHabitDetail = openHabitDetail;
+function closeHabitDetail() { document.getElementById('mD').classList.remove('show'); D.detailHabit = -1; }
+window.closeHabitDetail = closeHabitDetail;
+function togDetailHabit() {
+  if (D.detailHabit < 0) return;
+  togH(D.detailHabit);
+  renderHabitDetail();
+}
+window.togDetailHabit = togDetailHabit;
+function openEditFromDetail() {
+  var idx = D.detailHabit;
+  closeHabitDetail();
+  openEditH(idx);
+}
+window.openEditFromDetail = openEditFromDetail;
+
+function renderHabitDetail() {
+  var idx = D.detailHabit;
+  if (idx < 0 || !D.habits[idx]) return;
+  var h = ensureHabit(D.habits[idx]);
+  document.getElementById('dIcon').textContent = h.icon || '🎯';
+  document.getElementById('dName').textContent = h.name;
+  document.getElementById('dCat').textContent = h.cat + (h.note ? ' · 📌 ' + h.note : '');
+  document.getElementById('dStreak').textContent = habitStreak(h);
+  document.getElementById('dBest').textContent = h.best || 0;
+  document.getElementById('dTotal').textContent = h.total || 0;
+  document.getElementById('dRate').textContent = habitRate30(h) + '% (30d)';
+  var tg = document.getElementById('dToggle');
+  tg.textContent = h.done ? '✓' : '';
+  tg.style.background = h.done ? '#4CAF50' : 'transparent';
+  tg.style.borderColor = h.done ? '#4CAF50' : 'var(--accent2)';
+  tg.style.color = h.done ? '#fff' : 'var(--accent2)';
+  // monthly heatmap for THIS habit
+  var now = new Date();
+  document.getElementById('dMonth').textContent = now.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+  var year = now.getFullYear(), month = now.getMonth();
+  var first = new Date(year, month, 1);
+  var daysInMonth = new Date(year, month + 1, 0).getDate();
+  var startDow = first.getDay();
+  var caps = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  var html = '';
+  for (var c = 0; c < 7; c++) html += '<div class="hcap">' + caps[c] + '</div>';
+  for (var b = 0; b < startDow; b++) html += '<div class="hd blank"></div>';
+  for (var day = 1; day <= daysInMonth; day++) {
+    var d = new Date(year, month, day);
+    var ds = d.toDateString();
+    var isToday = ds === now.toDateString();
+    var cls = 'hd';
+    if (habitDoneOn(h, ds)) cls += ' l4';
+    if (isToday) cls += ' tdy';
+    html += '<div class="' + cls + '">' + day + '</div>';
+  }
+  document.getElementById('dHeat').innerHTML = html;
+}
+
+var H_ICONS = {
+  '\uD83E\uDDD8 Self Control': '\uD83E\uDDD8',
+  '\uD83D\uDCAA Fitness': '\uD83D\uDCAA',
+  '\u26A1 Focus': '\u26A1',
+  '\uD83E\uDD57 Health': '\uD83E\uDD57',
+  '\uD83D\uDCDA Growth': '\uD83D\uDCDA',
+  '\uD83D\uDE4F Spiritual': '\uD83D\uDE4F'
+};
+
+function addHabit() {
+  var nm = document.getElementById('hNm').value.trim();
+  var cat = document.getElementById('hCat').value;
+  var note = document.getElementById('hNote').value.trim();
+  if (!nm) { toast('\u26A0\uFE0F Name daalo!'); return; }
+  if (editingHabit >= 0) {
+    var h = D.habits[editingHabit];
+    h.name = nm; h.cat = cat; h.icon = H_ICONS[cat] || '\uD83C\uDFAF'; h.note = note;
+    toast('✏️ "' + nm + '" updated!');
+  } else {
+    D.habits.push({ name: nm, cat: cat, icon: H_ICONS[cat] || '\uD83C\uDFAF', done: false, sk: 0, note: note });
+    toast('\uD83C\uDF89 "' + nm + '" added!');
+    checkAch();
+  }
+  saveData();
+  renderAll();
+  closeMH();
+}
+window.addHabit = addHabit;
+
+/* ===== JAAP ACTIONS ===== */
+function selJName(idx) {
+  D.selName = D.jnames[idx];
+  D.jcount = 0;
+  saveData();
+  renderJaap();
+  toast('\uD83D\uDE4F Now: ' + D.selName);
+}
+window.selJName = selJName;
+
+function delJName(idx) {
+  var nm = D.jnames[idx];
+  D.jnames.splice(idx, 1);
+  if (D.selName === nm) D.selName = '';
+  saveData();
+  renderJaap();
+  toast('\u274C Removed: ' + nm);
+}
+window.delJName = delJName;
+
+function addJName() {
+  var inp = document.getElementById('jIn');
+  var nm = inp.value.trim();
+  if (!nm) { toast('\u26A0\uFE0F Naam likho!'); return; }
+  for (var i = 0; i < D.jnames.length; i++) {
+    if (D.jnames[i] === nm) { toast('\u26A0\uFE0F Already hai!'); return; }
+  }
+  D.jnames.push(nm);
+  inp.value = '';
+  D.selName = nm;
+  D.jcount = 0;
+  saveData();
+  renderJaap();
+  toast('\uD83C\uDFB5 "' + nm + '" added!');
+}
+window.addJName = addJName;
+
+function tapJaap() {
+  if (!D.selName) { toast('\u26A0\uFE0F Pehle naam select karo!'); return; }
+  D.jcount++;
+  addXP(1);
+  beep(880, 0.05); buzz(8);
+
+  var ctr = document.getElementById('jCnt');
+  var span = document.createElement('span');
+  span.className = 'p1';
+  span.textContent = '+1';
+  span.style.left = (30 + Math.random() * 40) + '%';
+  span.style.top = '0';
+  ctr.appendChild(span);
+  setTimeout(function() { if (span.parentNode) span.parentNode.removeChild(span); }, 650);
+
+  if (D.jcount % 108 === 0) {
+    D.malas++;
+    addXP(100);
+    confetti(); chime();
+    toast('\uD83D\uDCFF Mala Complete! #' + D.malas + ' +100 XP');
+  }
+
+  saveData();
+  renderJaap();
+  renderReview();
+}
+window.tapJaap = tapJaap;
+
+/* ===== GOAL ACTIONS ===== */
+function incGoal(idx) {
+  var g = D.goals[idx];
+  var was = g.cur >= g.tgt;
+  g.cur++;
+  ping();
+  if (!was && g.cur >= g.tgt) {
+    addXP(200);
+    confetti(); chime();
+    toast('\uD83C\uDF89 "' + g.name + '" complete! +200 XP');
+  }
+  checkAch();
+  saveData();
+  renderAll();
+}
+window.incGoal = incGoal;
+
+function decGoal(idx) {
+  if (D.goals[idx].cur > 0) D.goals[idx].cur--;
+  saveData();
+  renderAll();
+}
+window.decGoal = decGoal;
+
+function delGoal(idx) {
+  if (!confirm('Delete "' + D.goals[idx].name + '"?')) return;
+  D.goals.splice(idx, 1);
+  saveData();
+  renderAll();
+  toast('🗑️ Goal deleted');
+}
+window.delGoal = delGoal;
+
+function openMG() {
+  editingGoal = -1;
+  document.getElementById('mgTitle').textContent = '🎯 New Goal';
+  document.getElementById('mgSave').textContent = 'Add';
+  document.getElementById('gNm').value = '';
+  document.getElementById('gTgt').value = '100';
+  document.getElementById('gDl').value = '';
+  document.getElementById('mG').classList.add('show');
+}
+function closeMG() { document.getElementById('mG').classList.remove('show'); editingGoal = -1; }
+window.openMG = openMG;
+window.closeMG = closeMG;
+
+function openEditG(idx) {
+  editingGoal = idx;
+  var g = D.goals[idx];
+  document.getElementById('mgTitle').textContent = '✏️ Edit Goal';
+  document.getElementById('mgSave').textContent = 'Save';
+  document.getElementById('gNm').value = g.name;
+  document.getElementById('gTgt').value = g.tgt;
+  document.getElementById('gDl').value = g.dl || '';
+  document.getElementById('mG').classList.add('show');
+}
+window.openEditG = openEditG;
+
+function addGoal() {
+  var nm = document.getElementById('gNm').value.trim();
+  var tgt = parseInt(document.getElementById('gTgt').value) || 100;
+  var dl = document.getElementById('gDl').value;
+  if (!nm) { toast('\u26A0\uFE0F Name daalo!'); return; }
+  if (editingGoal >= 0) {
+    var g = D.goals[editingGoal];
+    g.name = nm; g.tgt = tgt; g.dl = dl;
+    toast('✏️ "' + nm + '" updated!');
+  } else {
+    D.goals.push({ name: nm, tgt: tgt, cur: 0, dl: dl });
+    D.totalGoals = (D.totalGoals || 0) + 1;
+    toast('\uD83C\uDFAF "' + nm + '" added!');
+  }
+  saveData();
+  renderGoals();
+  closeMG();
+}
+window.addGoal = addGoal;
+
+/* ===== JOURNAL ACTIONS ===== */
+function selMood(m) { D.curMood = (D.curMood === m ? '' : m); renderJournal(); ping(); }
+window.selMood = selMood;
+
+function saveJournal() {
+  var txt = document.getElementById('jTxt').value.trim();
+  if (!txt) { toast('\u26A0\uFE0F Write something'); return; }
+  D.journal.unshift({ dt: new Date().toISOString(), tx: txt, mood: D.curMood });
+  addXP(5);
+  D.curMood = '';
+  saveData();
+  document.getElementById('jTxt').value = '';
+  checkAch();
+  renderJournal();
+  toast('\uD83D\uDCDD Saved! +5 XP');
+}
+window.saveJournal = saveJournal;
+
+/* ===== BREATHE ===== */
+function openBreath() { document.getElementById('bMod').classList.add('show'); }
+function closeBreath() { document.getElementById('bMod').classList.remove('show'); }
+window.openBreath = openBreath;
+window.closeBreath = closeBreath;
+
+/* ===== URGE CONTROL SYSTEM ===== */
+function recomputeUrgeStreak() {
+  // clean streak = full days since last "gave in", else since first resisted log
+  var ref = null;
+  if (D.lastUrgeFail) {
+    ref = new Date(D.lastUrgeFail);
+  } else {
+    // find earliest resisted entry
+    for (var i = D.urgeLog.length - 1; i >= 0; i--) {
+      if (D.urgeLog[i].resisted) { ref = new Date(D.urgeLog[i].dt); break; }
+    }
+  }
+  if (ref) {
+    var a = new Date(ref.getFullYear(), ref.getMonth(), ref.getDate());
+    var n = new Date(); var b = new Date(n.getFullYear(), n.getMonth(), n.getDate());
+    D.urgeStreak = Math.max(0, Math.round((b - a) / 86400000));
+  } else {
+    D.urgeStreak = 0;
+  }
+  if (D.urgeStreak > (D.bestUrgeStreak || 0)) D.bestUrgeStreak = D.urgeStreak;
+}
+function urgesTodayCount() {
+  var ds = new Date().toDateString(), n = 0;
+  for (var i = 0; i < D.urgeLog.length; i++) {
+    if (D.urgeLog[i].resisted && new Date(D.urgeLog[i].dt).toDateString() === ds) n++;
+  }
+  return n;
+}
+function resistUrge() {
+  D.urges++;
+  D.urgeLog.unshift({ dt: new Date().toISOString(), resisted: true });
+  if (D.urgeLog.length > 100) D.urgeLog.pop();
+  addXP(5);
+  chime();
+  recomputeUrgeStreak();
+  checkAch();
+  saveData();
+  renderAll();
+  closeBreath();
+  toast('\uD83D\uDEE1\uFE0F Resisted! Clean streak ' + D.urgeStreak + 'd · +5 XP');
+}
+window.resistUrge = resistUrge;
+
+function urgeGaveIn() {
+  if (!confirm('Maan lein aapne control nahi kiya? Koi baat nahi — kal naya din hai 💪')) return;
+  D.urgeLog.unshift({ dt: new Date().toISOString(), resisted: false });
+  if (D.urgeLog.length > 100) D.urgeLog.pop();
+  D.lastUrgeFail = new Date().toDateString();
+  recomputeUrgeStreak();
+  saveData();
+  renderAll();
+  toast('Reset ho gaya. Phir se shuru karo — you got this! 🌱');
+}
+window.urgeGaveIn = urgeGaveIn;
+
+function renderUrge() {
+  var cs = document.getElementById('uClean'); if (!cs) return;
+  recomputeUrgeStreak();
+  cs.textContent = D.urgeStreak || 0;
+  document.getElementById('uToday').textContent = urgesTodayCount();
+  document.getElementById('uTotal').textContent = D.urges || 0;
+  var lg = document.getElementById('uLog');
+  if (lg) {
+    if (!D.urgeLog || D.urgeLog.length === 0) {
+      lg.innerHTML = '';
+    } else {
+      var html = '<div style="font-size:.62rem;color:var(--muted);margin-top:8px;font-weight:600">Recent</div>';
+      var mx = Math.min(5, D.urgeLog.length);
+      for (var i = 0; i < mx; i++) {
+        var u = D.urgeLog[i];
+        var t = new Date(u.dt).toLocaleString('en-IN', { weekday: 'short', hour: 'numeric', minute: '2-digit' });
+        html += '<div class="uli"><span class="ud">' + t + '</span><span class="ut ' + (u.resisted ? 'ok' : 'no') + '">' + (u.resisted ? '🛡️ Resisted' : '😔 Gave in') + '</span></div>';
+      }
+      lg.innerHTML = html;
+    }
+  }
+}
+
+/* ===== DATA EXPORT / IMPORT / RESET ===== */
+function exportData() {
+  var blob = new Blob([JSON.stringify(D, null, 2)], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'self-control-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  toast('⬇️ Backup downloaded!');
+}
+window.exportData = exportData;
+
+function importData(ev) {
+  var file = ev.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var obj = JSON.parse(e.target.result);
+      if (!obj || typeof obj !== 'object') throw 'bad';
+      for (var k in obj) { D[k] = obj[k]; }
+      lastLevel = getLvl();
+      saveData(); applyTheme(); renderAll();
+      toast('✅ Backup imported!');
+    } catch(err) { toast('⚠️ Invalid backup file'); }
+  };
+  reader.readAsText(file);
+  ev.target.value = '';
+}
+window.importData = importData;
+
+function resetData() {
+  if (!confirm('⚠️ This will erase ALL your data permanently. Continue?')) return;
+  if (!confirm('Pakka? Ye undo nahi hoga!')) return;
+  localStorage.removeItem('sc_v4');
+  localStorage.removeItem('sc_v3');
+  location.reload();
+}
+window.resetData = resetData;
+
+/* ===== KEYBOARD ===== */
+document.getElementById('jIn').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') { e.preventDefault(); addJName(); }
+});
+document.getElementById('hNm').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') { e.preventDefault(); addHabit(); }
+});
+document.getElementById('hNote').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') { e.preventDefault(); addHabit(); }
+});
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === ' ' && D.selName) {
+    var jp = document.getElementById('p3');
+    if (jp && jp.classList.contains('a')) {
+      e.preventDefault();
+      tapJaap();
+    }
+  }
+});
+
+/* ===== BREATHING PHASE TEXT ===== */
+var breathPhases = ['Breathe in... 🌬️', 'Hold...', 'Breathe out... 😮‍💨', 'Hold...'];
+var breathIdx = 0;
+setInterval(function() {
+  var el = document.getElementById('breathPhase');
+  var modal = document.getElementById('bMod');
+  if (el && modal && modal.classList.contains('show') && urgeMode === 'breath') {
+    el.textContent = breathPhases[breathIdx % breathPhases.length];
+    breathIdx++;
+  }
+}, 2000);
+
+/* ===== PWA: SELF-CONTAINED (icon + manifest + service worker all inline) ===== */
+var APP_ICON = 'data:image/png;base64,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';
+
+/* the service worker source, generated at runtime as a Blob (no separate sw.js file) */
+function swSource() {
+  return [
+    "var CACHE='self-control-inline-v1';",
+    "self.addEventListener('install',function(e){self.skipWaiting();});",
+    "self.addEventListener('activate',function(e){e.waitUntil(self.clients.claim());});",
+    // network-first navigation, fall back to cached root html when offline
+    "self.addEventListener('fetch',function(e){var r=e.request;if(r.method!=='GET')return;",
+    "if(r.mode==='navigate'){e.respondWith(fetch(r).then(function(res){var c=res.clone();caches.open(CACHE).then(function(k){k.put(r,c);});return res;}).catch(function(){return caches.match(r).then(function(m){return m||caches.match('/');});}));return;}",
+    "e.respondWith(caches.match(r).then(function(m){return m||fetch(r).then(function(res){var c=res.clone();caches.open(CACHE).then(function(k){k.put(r,c);});return res;}).catch(function(){return m;});}));});",
+    // reminder notifications from the page
+    "self.addEventListener('message',function(e){if(e.data&&e.data.type==='notify'){self.registration.showNotification(e.data.title||'Self Control',{body:e.data.body||'Check your habits!',icon:e.data.icon,tag:'sc-reminder'});}});",
+    "self.addEventListener('notificationclick',function(e){e.notification.close();e.waitUntil(clients.matchAll({type:'window'}).then(function(cl){for(var i=0;i<cl.length;i++){if('focus'in cl[i])return cl[i].focus();}if(clients.openWindow)return clients.openWindow('/');}));});"
+  ].join('\n');
+}
+
+function setupPWA() {
+  // 1) apply the inline icon to favicon, apple-touch-icon and the install banner img
+  try {
+    var setLink = function(rel, extra) {
+      var l = document.querySelector('link[rel="' + rel + '"]');
+      if (!l) { l = document.createElement('link'); l.rel = rel; document.head.appendChild(l); }
+      l.href = APP_ICON; if (extra) l.type = extra;
+    };
+    setLink('icon', 'image/png');
+    setLink('apple-touch-icon');
+    var bimg = document.getElementById('appIcon'); if (bimg) bimg.src = APP_ICON;
+  } catch (e) {}
+
+  // 2) generate manifest.json as a Blob URL (no separate file needed)
+  try {
+    var manifest = {
+      name: 'Self Control — Discipline Tracker',
+      short_name: 'Self Control',
+      description: 'Habits, hourly control, challenges, jaap, goals & journal.',
+      start_url: '.',
+      scope: '.',
+      display: 'standalone',
+      orientation: 'portrait',
+      background_color: '#000000',
+      theme_color: '#6C63FF',
+      icons: [
+        { src: APP_ICON, sizes: '192x192', type: 'image/png', purpose: 'any' },
+        { src: APP_ICON, sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+      ]
+    };
+    var mblob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+    var murl = URL.createObjectURL(mblob);
+    var ml = document.createElement('link'); ml.rel = 'manifest'; ml.href = murl;
+    document.head.appendChild(ml);
+  } catch (e) { console.log('manifest inline err', e); }
+
+  // 3) register an inline service worker via Blob (works when served over http/https)
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      try {
+        var blob = new Blob([swSource()], { type: 'text/javascript' });
+        var url = URL.createObjectURL(blob);
+        navigator.serviceWorker.register(url).catch(function (e) { console.log('SW reg failed', e); });
+      } catch (e) { console.log('SW blob err', e); }
+    });
+  }
+
+  // install prompt
+  var deferredPrompt = null;
+  var banner = document.getElementById('installBanner');
+  var btn = document.getElementById('installBtn');
+  window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (banner) banner.classList.add('show');
+  });
+  if (btn) btn.addEventListener('click', function() {
+    if (!deferredPrompt) { toast('Browser menu se "Add to Home screen" choose karo 📲'); return; }
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(){ deferredPrompt = null; if (banner) banner.classList.remove('show'); });
+  });
+  window.addEventListener('appinstalled', function() {
+    if (banner) banner.classList.remove('show');
+    toast('🎉 App installed!');
+  });
+}
+
+/* daily reminder via Notification API */
+function scheduleReminder() {
+  if (!('Notification' in window)) return;
+  function fire() {
+    var done = 0; for (var i = 0; i < D.habits.length; i++) if (D.habits[i].done) done++;
+    var hrs = hoursDone();
+    var body = 'Aaj ' + done + '/' + D.habits.length + ' habits · ' + hrs + '/24 ghante control. Chalo aur karo! 💪';
+    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({ type: 'notify', title: 'Self Control ⏰', body: body, icon: APP_ICON });
+    } else if (Notification.permission === 'granted') {
+      new Notification('Self Control ⏰', { body: body, icon: APP_ICON });
+    }
+  }
+  // check every minute; fire once around the user's reminder hour (default 21:00)
+  var remHour = (typeof D.remHour === 'number') ? D.remHour : 21;
+  setInterval(function() {
+    var now = new Date();
+    var key = now.toDateString() + '-' + remHour;
+    if (now.getHours() === remHour && now.getMinutes() === 0 && D._lastRemind !== key) {
+      D._lastRemind = key; saveData(); fire();
+    }
+  }, 60000);
+}
+function enableReminders() {
+  if (!('Notification' in window)) { toast('Notifications supported nahi hai'); return; }
+  Notification.requestPermission().then(function(p) {
+    if (p === 'granted') { toast('🔔 Daily reminder on (9 PM)'); D.reminders = true; saveData(); }
+    else toast('Notification permission deny hua');
+    renderSettings();
+  });
+}
+window.enableReminders = enableReminders;
+
+/* ===== INIT ===== */
+function init() {
+  loadData();
+  if (!Array.isArray(D.urgeLog)) D.urgeLog = [];
+  applyTheme();
+  migrateHabits();
+  checkDay();
+  checkHours();
+  checkLogin();
+  checkAllChallenges();
+  recomputeUrgeStreak();
+  checkAch();
+
+  // Create mala dots
+  var dotsEl = document.getElementById('jDots');
+  var dotsHtml = '';
+  for (var i = 0; i < 54; i++) {
+    dotsHtml += '<div class="mdot"></div>';
+  }
+  dotsEl.innerHTML = dotsHtml;
+
+  renderAll();
+  setupPWA();
+  scheduleReminder();
+
+  // deep-link shortcuts
+  var qs = new URLSearchParams(location.search);
+  if (qs.get('breathe') === '1') openBreath();
+  if (qs.get('p')) { var pi = parseInt(qs.get('p')); if (!isNaN(pi)) goPage(pi); }
+
+  console.log('App started. State:', D);
+}
+
+init();
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a13d25fba9eef507',t:'MTc4MjgyMjI3MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
